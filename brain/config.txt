@@ -1,0 +1,3 @@
+[DEVICE-INFO]
+deviceNo = 0
+udpPort = 5000
