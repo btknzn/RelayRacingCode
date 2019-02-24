@@ -1,3 +1,7 @@
 [DEVICE-INFO]
 deviceNo = 0
 udpPort = 5000
+IN1 = 10
+IN2 = 11
+IN3 = 13
+IN4 = 15

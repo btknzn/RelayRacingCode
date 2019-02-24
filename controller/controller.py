@@ -9,12 +9,6 @@ import sys
 
 def main():
     signal.signal(signal.SIGINT, signal_handler)
-    
-    
-    
-    initGPIO()
-    initPin(12)
-    setPinHigh(12)
 
     configParser = ConfigParser.RawConfigParser()   
     configFilePath = r'config.txt'
@@ -23,6 +17,20 @@ def main():
     DEVICE_NO = configParser.get('DEVICE-INFO', 'deviceNo')
     global UDP_PORT
     UDP_PORT = configParser.get('DEVICE-INFO', 'udpPort')
+    IN1 = configParser.get('DEVICE-INFO', 'in1')
+    IN2 = configParser.get('DEVICE-INFO', 'in2')
+    IN3 = configParser.get('DEVICE-INFO', 'in3')
+    IN4 = configParser.get('DEVICE-INFO', 'in4')
+
+    initGPIO()
+    initPin(IN1)
+    initPin(IN2)
+    initPin(IN3)
+    initPin(IN4)
+    setPinHigh(IN1)
+    setPinLow(IN2)
+    setPinHigh(IN3)
+    setPinLow(IN4)
 
 
     client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
@@ -31,6 +39,7 @@ def main():
     print('Press Ctrl+C to quit')
     while True:
         data, addr = client.recvfrom(1024)
+        print("Recieved data")
         parseData(data)
 
     GPIO.cleanup()
@@ -58,11 +67,13 @@ def setPinHigh(pinNo):
 
 #Sets to logic low(0V)
 def setPinLow(pinNo):
-    GPIO.output(pinNo,GPIO.LOW)
+    if socket.gethostname() == 'orangepizero':
+        GPIO.output(pinNo,GPIO.LOW)
 
 def cleanupGPIO():
     if socket.gethostname() == 'orangepizero':
         GPIO.cleanup()
+
 def parseData(data):
     rawStr = data.split(",")
     devNo = rawStr[0].split(":")[1]
