@@ -68,7 +68,7 @@ def setPinLow(pinNo):
 
 def cleanupGPIO():
     if socket.gethostname() == 'orangepizero':
-        setPinLow([10, 11, 13, 15])
+        setPinLow(getMotorPins())
         GPIO.cleanup()
 
 def getMotorPins():
