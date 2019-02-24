@@ -9,7 +9,7 @@ def nothing(*arg):
 
 def createTrackbars(windowName):
     cv2.namedWindow(windowName)
-    icol = (35, 47, 54, 96, 255, 255)    # Brown
+    icol = (35, 47, 54, 96, 255, 239)    # Brown
     cv2.createTrackbar('lowHue', windowName, icol[0], 255, nothing)
     cv2.createTrackbar('lowSat', windowName, icol[1], 255, nothing)
     cv2.createTrackbar('lowVal', windowName, icol[2], 255, nothing)
@@ -51,6 +51,7 @@ while True:
     cv2.imshow('colorTest', mask)
     k = cv2.waitKey(5) & 0xFF
     if (k == 27):
+        print(mask.shape)
         print(str(colorLow)+", "+str(colorHigh))
         break
 
