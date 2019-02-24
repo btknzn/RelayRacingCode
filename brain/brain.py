@@ -37,7 +37,7 @@ def main():
     camera.framerate = 32
     rawCapture = PiRGBArray(camera, size=(640, 480))
 
-    vs = VideoStream(src=0).start()
+    #vs = VideoStream(src=0).start()
     time.sleep(1.0)
 
     lower = (0, 0, 0)
@@ -91,7 +91,7 @@ def main():
         cv2.imshow('colorTest', mask)
 
     closeSocket(sckt)
-    vs.stop()
+    #vs.stop()
     cv2.destroyAllWindows()
 
 
