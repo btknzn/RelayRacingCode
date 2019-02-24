@@ -5,5 +5,12 @@
 
 - pipenv shell
 
+For brain:
 
-- python route_finder.py
+- cd brain
+- python brain.py
+
+For controller:
+
+- cd controller
+- python controller.py
