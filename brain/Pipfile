@@ -6,11 +6,9 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-opencv-contrib-python = "*"
 numpy = "*"
 imutils = "*"
 pillow = "*"
-opi-gpio = "*"
 
 [requires]
 python_version = "2.7"
