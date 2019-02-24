@@ -105,6 +105,7 @@ def makeAction(action, duration):
         setPinLow(IN2)
         setPinLow(IN3)
         setPinLow(IN4)
+        
     elif action=="Backward":
         setPinLow(IN1)
         setPinHigh(IN2)
@@ -119,19 +120,6 @@ def makeAction(action, duration):
         setPinLow(IN4)
         
     elif action=="Left":
-        setPinHigh(IN1)
-        setPinLow(IN2)
-        setPinLow(IN3)
-        setPinLow(IN4)
-
-        time.sleep(duration)
-
-        setPinLow(IN1)
-        setPinLow(IN2)
-        setPinLow(IN3)
-        setPinLow(IN4)
-        time.sleep(duration)
-    elif action=="Right":
         setPinLow(IN1)
         setPinLow(IN2)
         setPinHigh(IN3)
@@ -143,6 +131,21 @@ def makeAction(action, duration):
         setPinLow(IN2)
         setPinLow(IN3)
         setPinLow(IN4)
+        time.sleep(duration)
+
+    elif action=="Right":
+        setPinHigh(IN1)
+        setPinLow(IN2)
+        setPinLow(IN3)
+        setPinLow(IN4)
+
+        time.sleep(duration)
+
+        setPinLow(IN1)
+        setPinLow(IN2)
+        setPinLow(IN3)
+        setPinLow(IN4)
+
     else:
         print("Unknown action: %s, %s" % (action,duration))
 
