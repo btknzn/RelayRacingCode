@@ -27,6 +27,7 @@ def main():
     initPin(IN2)
     initPin(IN3)
     initPin(IN4)
+
     setPinHigh(IN1)
     setPinLow(IN2)
     setPinHigh(IN3)
@@ -42,7 +43,6 @@ def main():
         print("Recieved data")
         parseData(data)
 
-    GPIO.cleanup()
     client.close()
 
 def signal_handler(sig, frame):
@@ -72,7 +72,9 @@ def setPinLow(pinNo):
 
 def cleanupGPIO():
     if socket.gethostname() == 'orangepizero':
+        setPinLow([10, 11, 13, 15])
         GPIO.cleanup()
+
 
 def parseData(data):
     rawStr = data.split(",")
@@ -85,21 +87,55 @@ def parseData(data):
 
 def makeAction(action, duration):
     if action=="Forward":
-        # TODO Implement the pin activation using GPIO
+        setPinHigh(IN1)
+        setPinLow(IN2)
+        setPinHigh(IN3)
+        setPinLow(IN4)
+
         time.sleep(duration)
-        # TODO Implement the pin deactivation using GPIO
+
+        setPinLow(IN1)
+        setPinLow(IN2)
+        setPinLow(IN3)
+        setPinLow(IN4)
     elif action=="Backward":
-        # TODO Implement the pin activation using GPIO
+        setPinLow(IN1)
+        setPinHigh(IN2)
+        setPinLow(IN3)
+        setPinHigh(IN4)
+
         time.sleep(duration)
-        # TODO Implement the pin deactivation using GPIO
+
+        setPinLow(IN1)
+        setPinLow(IN2)
+        setPinLow(IN3)
+        setPinLow(IN4)
+        
     elif action=="Left":
-        # TODO Implement the pin activation using GPIO
+        setPinHigh(IN1)
+        setPinLow(IN2)
+        setPinLow(IN3)
+        setPinLow(IN4)
+
         time.sleep(duration)
-        # TODO Implement the pin deactivation using GPIO
+
+        setPinLow(IN1)
+        setPinLow(IN2)
+        setPinLow(IN3)
+        setPinLow(IN4)
+        time.sleep(duration)
     elif action=="Right":
-        # TODO Implement the pin activation using GPIO
+        setPinLow(IN1)
+        setPinLow(IN2)
+        setPinHigh(IN3)
+        setPinLow(IN4)
+
         time.sleep(duration)
-        # TODO Implement the pin deactivation using GPIO
+
+        setPinLow(IN1)
+        setPinLow(IN2)
+        setPinLow(IN3)
+        setPinLow(IN4)
     else:
         print("Unknown action: %s, %s" % (action,duration))
 
