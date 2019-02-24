@@ -9,6 +9,7 @@ from imutils.video import VideoStream
 from imutils.contours import sort_contours
 import time
 
+
 def main():
     vs = VideoStream(src=0).start()
     time.sleep(1.0)
@@ -59,7 +60,7 @@ def main():
                     #right box is bigger than the left box, so its facing the left side
                     cv2.arrowedLine(image, (x2, y2), (x1, y1), (255, 0, 0), 3)
     
-        cv2.imshow('colorTest', mask)
+        cv2.imshow('Robot Detector', image)
 
         
     vs.stop()
@@ -78,14 +79,6 @@ def getCenterOfBox(box):
     return (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
 
 def configureColorRange(image, hsvImage):
-    #r = cv2.selectROI(im)
-    #imCrop = im[int(r[1]):int(r[1]+r[3]), int(r[0]):int(r[0]+r[2])]
- 
-    # open live feed, inform user to select a bounding box of robots color
-    # after that inform user to select a bounding box of obstacle color
-    # 
-    # after selecting these, loop through the first cropped image,
-    # find the lowest and highest values of each dimension(H,S,V) 
     r1 = cv2.selectROI("Select robot color", image)
     robotImg = hsvImage[int(r1[1]):int(r1[1]+r1[3]), int(r1[0]):int(r1[0]+r1[2])]
     r2 = cv2.selectROI("Select obstacle color", image)
@@ -104,6 +97,7 @@ def findRanges(image):
     highS=0
     highV=0
 
+    #Tmp variables for calculating the average values, used for testing purposes only, not these using anymore
     tmpH=0
     tmpS=0
     tmpV=0

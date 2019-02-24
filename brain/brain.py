@@ -1,24 +1,12 @@
 import socket
 import ConfigParser
 import time
+import cv2
 
+from picamera.array import PiRGBArray
+from picamera import PiCamera
 
-
-def main():
-    configParser = ConfigParser.RawConfigParser()   
-    configFilePath = r'config.txt'
-    configParser.read(configFilePath)
-    DEVICE_NO = configParser.get('DEVICE-INFO', 'deviceNo')
-    UDP_PORT = configParser.get('DEVICE-INFO', 'udpPort')
-
-    sckt = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sckt.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-
-    #sendMessage(sckt, "255.255.255.255", 5000, 0, "Forward", 1)
-    #sendMessage(sckt, "255.255.255.255", 5000, 0, "Backward", 1)
-    #sendMessage(sckt, "255.255.255.255", 5000, 0, "Left", 1)
-    #sendMessage(sckt, "255.255.255.255", 5000, 0, "Right", 1)
-    
+def controlRobot(sckt):
     while True:
         myinput = raw_input("Enter your input ->")
         if myinput == "w":
@@ -29,8 +17,25 @@ def main():
             sendMessage(sckt, "255.255.255.255", 5000, 0, "Backward", 1)
         elif myinput == "d":
             sendMessage(sckt, "255.255.255.255", 5000, 0, "Right", 1)
-            
-    closeSocket(sckt)
+        else:
+            break
+def main():
+    configParser = ConfigParser.RawConfigParser()   
+    configFilePath = r'config.txt'
+    configParser.read(configFilePath)
+    DEVICE_NO = configParser.get('DEVICE-INFO', 'deviceNo')
+    UDP_PORT = configParser.get('DEVICE-INFO', 'udpPort')
+
+    sckt = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sckt.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+
+    #controlRobot(sckt)
+    
+    
+    camera = PiCamera()
+    camera.resolution = (640, 480)
+    camera.framerate = 32
+    rawCapture = PiRGBArray(camera, size=(640, 480))
 
     vs = VideoStream(src=0).start()
     time.sleep(1.0)
@@ -38,8 +43,10 @@ def main():
     lower = (0, 0, 0)
     upper = (255, 255, 255)
 
-    while True:
-        image = vs.read()
+    
+    for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+	    image = frame.array
+        #image = vs.read()
         blurred = cv2.GaussianBlur(image, (11, 11), 0)
         hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
 
@@ -83,7 +90,7 @@ def main():
     
         cv2.imshow('colorTest', mask)
 
-        
+    closeSocket(sckt)
     vs.stop()
     cv2.destroyAllWindows()
 
@@ -156,6 +163,9 @@ def sendMessage(sckt, ip, port, device, action, duration):
 def closeSocket(sckt):
     sckt.close()
 
+def signal_handler(sig, frame):
+        
+        sys.exit(0)
 
 if __name__ == "__main__":
     main()
