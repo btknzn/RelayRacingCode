@@ -45,7 +45,7 @@ def main():
 
     
     for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-	    image = frame.array
+        image = frame.array
         #image = vs.read()
         blurred = cv2.GaussianBlur(image, (11, 11), 0)
         hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
