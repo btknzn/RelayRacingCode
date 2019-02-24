@@ -2,6 +2,7 @@ import socket
 import ConfigParser
 import time
 import cv2
+import imutils
 
 from picamera.array import PiRGBArray
 from picamera import PiCamera
@@ -31,11 +32,11 @@ def main():
 
     #controlRobot(sckt)
     
-    
     camera = PiCamera()
     camera.resolution = (640, 480)
     camera.framerate = 32
     rawCapture = PiRGBArray(camera, size=(640, 480))
+    
 
     #vs = VideoStream(src=0).start()
     time.sleep(1.0)
@@ -43,7 +44,7 @@ def main():
     lower = (0, 0, 0)
     upper = (255, 255, 255)
 
-    
+    stream = io.BytesIO()
     for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
         image = frame.array
         #image = vs.read()
@@ -89,6 +90,7 @@ def main():
                     cv2.arrowedLine(image, (x2, y2), (x1, y1), (255, 0, 0), 3)
     
         cv2.imshow('colorTest', mask)
+        rawCapture.truncate(0)
 
     closeSocket(sckt)
     #vs.stop()
