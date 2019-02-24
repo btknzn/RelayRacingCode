@@ -17,6 +17,7 @@ def main():
     DEVICE_NO = configParser.get('DEVICE-INFO', 'deviceNo')
     global UDP_PORT
     UDP_PORT = configParser.get('DEVICE-INFO', 'udpPort')
+    
     IN1 = int(configParser.get('DEVICE-INFO', 'in1'))
     IN2 = int(configParser.get('DEVICE-INFO', 'in2'))
     IN3 = int(configParser.get('DEVICE-INFO', 'in3'))
@@ -27,11 +28,6 @@ def main():
     initPin(IN2)
     initPin(IN3)
     initPin(IN4)
-
-    setPinHigh(IN1)
-    setPinLow(IN2)
-    setPinHigh(IN3)
-    setPinLow(IN4)
 
 
     client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
@@ -75,6 +71,15 @@ def cleanupGPIO():
         setPinLow([10, 11, 13, 15])
         GPIO.cleanup()
 
+def getMotorPins():
+    configParser = ConfigParser.RawConfigParser()   
+    configFilePath = r'config.txt'
+    configParser.read(configFilePath)
+    IN1 = int(configParser.get('DEVICE-INFO', 'in1'))
+    IN2 = int(configParser.get('DEVICE-INFO', 'in2'))
+    IN3 = int(configParser.get('DEVICE-INFO', 'in3'))
+    IN4 = int(configParser.get('DEVICE-INFO', 'in4'))
+    return [IN1, IN2, IN3, IN4]
 
 def parseData(data):
     rawStr = data.split(",")
