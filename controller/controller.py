@@ -1,9 +1,16 @@
 import socket
 import ConfigParser
 import time
+import OPi.GPIO as GPIO
 
 
 def main():
+
+    GPIO.setmode(GPIO.BOARD)
+    initPin(12)
+    setPinHigh(12)
+
+    
     configParser = ConfigParser.RawConfigParser()   
     configFilePath = r'config.txt'
     configParser.read(configFilePath)
@@ -22,6 +29,20 @@ def main():
 
     client.close()
 
+
+#Initializes the pins to output function
+#all of the pins which are going to be used needs to be initialized.
+def initPin(pinNo):
+    GPIO.setup(pinNo, GPIO.OUT)
+
+
+#Sets to logic high(3.3V)
+def setPinHigh(pinNo):
+    GPIO.output(pinNo, GPIO.HIGH)
+
+#Sets to logic low(0V)
+def setPinLow(pinNo):
+    GPIO.output(pinNo,GPIO.LOW)
 def parseData(data):
     rawStr = data.split(",")
     devNo = rawStr[0].split(":")[1]
