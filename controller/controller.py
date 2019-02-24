@@ -68,7 +68,8 @@ def setPinLow(pinNo):
 
 def cleanupGPIO():
     if socket.gethostname() == 'orangepizero':
-        setPinLow(getMotorPins())
+        IN1, IN2, IN3, IN4 = getMotorPins()
+        setPinLow([IN1, IN2, IN3, IN4])
         GPIO.cleanup()
 
 def getMotorPins():
@@ -79,7 +80,7 @@ def getMotorPins():
     IN2 = int(configParser.get('DEVICE-INFO', 'in2'))
     IN3 = int(configParser.get('DEVICE-INFO', 'in3'))
     IN4 = int(configParser.get('DEVICE-INFO', 'in4'))
-    return [IN1, IN2, IN3, IN4]
+    return IN1, IN2, IN3, IN4
 
 def parseData(data):
     rawStr = data.split(",")
@@ -91,6 +92,7 @@ def parseData(data):
 
 
 def makeAction(action, duration):
+    IN1, IN2, IN3, IN4 = getMotorPins()
     if action=="Forward":
         setPinHigh(IN1)
         setPinLow(IN2)
