@@ -6,7 +6,7 @@
 - pipenv shell
 
 For brain:
-
+- pip install opencv-python
 - cd brain
 - python brain.py
 
