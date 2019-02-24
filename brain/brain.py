@@ -44,7 +44,6 @@ def main():
     lower = (0, 0, 0)
     upper = (255, 255, 255)
 
-    stream = io.BytesIO()
     for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
         image = frame.array
         #image = vs.read()
