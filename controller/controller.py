@@ -17,10 +17,10 @@ def main():
     DEVICE_NO = configParser.get('DEVICE-INFO', 'deviceNo')
     global UDP_PORT
     UDP_PORT = configParser.get('DEVICE-INFO', 'udpPort')
-    IN1 = configParser.get('DEVICE-INFO', 'in1')
-    IN2 = configParser.get('DEVICE-INFO', 'in2')
-    IN3 = configParser.get('DEVICE-INFO', 'in3')
-    IN4 = configParser.get('DEVICE-INFO', 'in4')
+    IN1 = int(configParser.get('DEVICE-INFO', 'in1'))
+    IN2 = int(configParser.get('DEVICE-INFO', 'in2'))
+    IN3 = int(configParser.get('DEVICE-INFO', 'in3'))
+    IN4 = int(configParser.get('DEVICE-INFO', 'in4'))
 
     initGPIO()
     initPin(IN1)
