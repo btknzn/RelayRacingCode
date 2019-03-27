@@ -1,11 +1,108 @@
 import socket
-import ConfigParser
+import configparser
 import time
 import OPi.GPIO as GPIO
 import os
 import signal
 import sys
 
+DEVICE_NO = 0
+UDP_PORT = 0
+
+
+
+class Controller():
+    Init = 0
+    Ready = 1
+    Running = 2
+
+    def __init__(self, ip= '127.0.0.1', port = 5005, bsize=1024):
+        self.state = self.Init
+        self.TCP_IP = ip    #ip
+        self.TCP_PORT = port    #port
+        self.BUFFER_SIZE = bsize    #Buffer size
+        
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket.connect((TCP_IP, TCP_PORT))
+        
+        
+
+        # Create listening(server type) tcp socket
+
+
+        MESSAGE = "Hello, World!"
+
+        self.socket.send(MESSAGE)
+        data = self.socket.recv(BUFFER_SIZE)
+
+    
+    def exitRunning(self):
+        self.socket.close
+
+
+    def run(self):
+        if self.state == self.Init:
+            # Listen for message
+            # If message recieved and this message belongs to this controller:
+                # if this message is a route message
+                    # Get the start and target states from the route message
+                    # Update state into Ready
+                    # Send okay message ??TODO re-think if this message is necessary 
+                # else we are in wrong state, do nothing
+            data = self.socket.recv(self.BUFFER_SIZE)
+
+            message = Message.create(data)
+            if message.type == Message.RouteMessage:
+                self.start = message.start
+                self.target = message.target
+                self.state = self.Ready
+
+                reply = Message.createOkReply()
+                self.socket.send(reply)
+            else:
+                pass
+
+
+        elif self.state == self.Ready:
+            # Listen for message
+            # If message recieved and this message belongs to this controller:
+                # if this message is a start message
+                    # Update state into Running
+                # else do nothing
+
+            data = self.socket.recv(self.BUFFER_SIZE)
+            message = Message.create(data)
+            if message.type == Message.StartMessage:
+                self.state = self.Running
+            else:
+                pass
+
+        elif self.state == self.Running:
+            # if the goal accuired 
+                # then send a end message to the brain
+                # set state to init TODO: or finish executing the program
+            # else
+                # send get location message to the brain
+                # listen for message
+                # If message recieved and this message belongs to this controller:
+                    # if this message is a location message
+                        # iterate the PID controller using the current location and the routes
+                    # else do nothing, pass
+
+            if self.isArrived():
+                reply = Message.createEndMessage()
+                self.socket.send(reply)
+                self.state = self.Init
+            else:
+                reply = Message.createGetLocationMessage()
+                self.socket.send(reply)
+                data = self.socket.recv(self.BUFFER_SIZE)
+                message = Message.create(data)
+                if message.type == Message.LocationMessage:
+                    
+        else:
+
+            pass
 
 def main():
     signal.signal(signal.SIGINT, signal_handler)
