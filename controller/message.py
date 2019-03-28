@@ -21,7 +21,7 @@ class Message():
     @staticmethod
     #Function for parsing data and creating the specific message classes.
     def create(data):
-        print("Received: " + data)
+        #print("Received: " + data)
         parts = data.split(":")
         if not parts:
             return None
