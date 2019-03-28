@@ -6,38 +6,36 @@ import os
 import signal
 import sys
 
+sys.path.insert(0, "DifferentialDrivePathTracking/")
+from main import Controller
+from message import Message
+
 DEVICE_NO = 0
 UDP_PORT = 0
 
 
 
-class Controller():
+class PiController(Controller):
     Init = 0
     Ready = 1
     Running = 2
+    Iterating = 3
 
-    def __init__(self, ip= '127.0.0.1', port = 5005, bsize=1024):
+    def __init__(self, ip= '127.0.0.1', port = 5010, bsize=1024):
         self.state = self.Init
         self.TCP_IP = ip    #ip
         self.TCP_PORT = port    #port
         self.BUFFER_SIZE = bsize    #Buffer size
         
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.connect((TCP_IP, TCP_PORT))
+        self.socket.connect((self.TCP_IP, self.TCP_PORT))
+
+        self.closed = False
         
-        
-
-        # Create listening(server type) tcp socket
-
-
-        MESSAGE = "Hello, World!"
-
-        self.socket.send(MESSAGE)
-        data = self.socket.recv(BUFFER_SIZE)
-
     
-    def exitRunning(self):
-        self.socket.close
+    def close(self):
+        self.closed = True
+        self.socket.close()
 
 
     def run(self):
@@ -51,14 +49,14 @@ class Controller():
                 # else we are in wrong state, do nothing
             data = self.socket.recv(self.BUFFER_SIZE)
 
-            message = Message.create(data)
-            if message.type == Message.RouteMessage:
+            message = Message.create(data.decode())
+            if message and message.type == Message.RouteMessageType:
                 self.start = message.start
                 self.target = message.target
                 self.state = self.Ready
 
-                reply = Message.createOkReply()
-                self.socket.send(reply)
+                self.socket.send(Message.createOkMessage().__str__().encode())
+
             else:
                 pass
 
@@ -68,19 +66,22 @@ class Controller():
             # If message recieved and this message belongs to this controller:
                 # if this message is a start message
                     # Update state into Running
+                    # init controller object with start and first target state
                 # else do nothing
 
             data = self.socket.recv(self.BUFFER_SIZE)
-            message = Message.create(data)
-            if message.type == Message.StartMessage:
+            message = Message.create(data.decode())
+            if message and message.type == Message.StartMessageType:
                 self.state = self.Running
+                self.goalIndex = 0
+                Controller.__init__(self, self.start, self.target[self.goalIndex])
             else:
                 pass
 
         elif self.state == self.Running:
-            # if the goal accuired 
-                # then send a end message to the brain
-                # set state to init TODO: or finish executing the program
+            # if all goals achieved and there is no more target
+                # then send a end message to brain
+                # set state to init
             # else
                 # send get location message to the brain
                 # listen for message
@@ -88,23 +89,60 @@ class Controller():
                     # if this message is a location message
                         # iterate the PID controller using the current location and the routes
                     # else do nothing, pass
+                # else:
+                    # update self.goal and reset errors.
+                    # set state to iterating,
+
+            if self.goalIndex == len(self.target):
+                reply = Message.createEndMessage()
+                self.socket.send(reply.__str__().encode())
+                self.close()
+            else:
+                self.goal = self.target[self.goalIndex]
+                self.E = 0
+                self.old_e = 0
+
+                self.state = self.Iterating
+
+
+        elif self.state == self.Iterating:
+            # if the goal accuired 
+                # then set the goal index to next
+                # set the state to running.
+            # else:
+                # send get location message to the brain
+                # listen for message
+                # If message recieved and this message belongs to this controller:
+                    # if this message is a location message
+                        # iterate the PID controller using the current location and the routes
+                    # else
+                        # do nothing, pass
 
             if self.isArrived():
-                reply = Message.createEndMessage()
-                self.socket.send(reply)
-                self.state = self.Init
+                self.goalIndex = self.goalIndex + 1
+                self.state = self.Running
             else:
-                reply = Message.createGetLocationMessage()
-                self.socket.send(reply)
+                msg = Message.createGetLocationMessage()
+                self.socket.send(msg.__str__().encode())
                 data = self.socket.recv(self.BUFFER_SIZE)
-                message = Message.create(data)
-                if message.type == Message.LocationMessage:
-                    
+                message = Message.create(data.decode())
+                if message and message.type == Message.LocationMessageType:
+                    self.current = message.location
+                    v, w = self.iteratePID()
+                    print(v, w)
+                else:
+                    pass
         else:
-
             pass
 
+
 def main():
+
+    controller = PiController()
+    while not controller.closed:
+        controller.run()
+
+def main2():
     signal.signal(signal.SIGINT, signal_handler)
 
     configParser = ConfigParser.RawConfigParser()   
