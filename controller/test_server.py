@@ -47,7 +47,7 @@ class Brain():
             # For now, skipping the capture and identifying process
             # These will be implemented later 
             start = State(-20.0, 15.0, math.radians(90))
-            targets = [State(-20.0, 15.4, 0.0)]
+            targets = [State(-20.0, 16.0, 0.0)]
 
             self.conn.send(Message.createRouteMessage(start, targets).__str__().encode())
             
@@ -87,7 +87,7 @@ class Brain():
             message = Message.create(data.decode())
             # TODO: Identifying the current robot location is not implemented yet
             if message.type == Message.GetLocationMessageType:
-                self.conn.send(Message.createLocationMessage(State(-20.0, 15.0, math.radians(90))).__str__().encode())
+                self.conn.send(Message.createLocationMessage(State(-20.0, 15.3, math.radians(135))).__str__().encode())
 
             elif message.type == Message.EndMessageType:
                 self.robotIndex = self.robotIndex + 1

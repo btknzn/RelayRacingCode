@@ -6,6 +6,7 @@ import os
 import signal
 import sys
 
+import math
 sys.path.insert(0, "DifferentialDrivePathTracking/")
 from main import Controller
 from message import Message
@@ -129,16 +130,48 @@ class PiController(Controller):
                 if message and message.type == Message.LocationMessageType:
                     self.current = message.location
                     v, w = self.iteratePID()
-                    print(v, w)
+                    self.makeAction(v, w)
+                    
                 else:
                     pass
         else:
             pass
+    def normalize(self, v, w):
+        vr, vl = self.uniToDiff(v,w)
+        vmax = (2*v + math.radians(180)*self.L)/(2*self.R)
+        vmin= (2*v + math.radians(-180)*self.L)/(2*self.R)
+
+        normalVr = 5*((2*(vr-vmin))/(vmax-vmin) -1)
+        normalVl = 5*((2*(vl-vmin))/(vmax-vmin) -1)
+        return normalVr, normalVl
+
+    def makeAction(self, v, w):
+
+        nvr, nvl = self.normalize(v,w)
+
+        # Motor code to 
+        #print(nvr, nvl)
+        makeMove(nvr, nvl)
+        return
+
+    def signal_handler(self, sig, frame):
+        self.close()
+        cleanupGPIO()
+        sys.exit(0)
+
+def makeMove(vr, vl):
+    # set the pwmRight and pwmLeft pins to given vr and vl voltages
+    # sleep for dt seconds
+    # set the pwmLeft and 
+    #TODO: Needs to be implemented
+    pass
 
 
 def main():
 
+    
     controller = PiController()
+    signal.signal(signal.SIGINT, controller.signal_handler)
     while not controller.closed:
         controller.run()
 
