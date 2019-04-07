@@ -1,5 +1,5 @@
 import socket
-import configparser
+import ConfigParser
 import time
 import OPi.GPIO as GPIO
 import os
@@ -319,4 +319,4 @@ def makeAction(action, duration):
 
 
 if __name__ == "__main__":
-    main()
+    main2()
