@@ -5,6 +5,7 @@ import numpy as np
 from scipy import stats
 import math
 
+import imutils
 from imutils.video import VideoStream
 from imutils.contours import sort_contours
 import time

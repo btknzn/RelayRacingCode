@@ -1,138 +1,399 @@
 import socket
-import ConfigParser
-import time
-import cv2
-import imutils
 
-from picamera.array import PiRGBArray
-from picamera import PiCamera
+from message import Message
+import sys
+sys.path.insert(0, "DifferentialDrivePathTracking/")
+from main import State
+import math
+
+import imutils
+import cv2
+import numpy as np
+from scipy import stats
+from imutils.video import VideoStream
+from imutils.contours import sort_contours
+import time
+
+
 
 def main():
-    configParser = ConfigParser.RawConfigParser()   
-    configFilePath = r'config.txt'
-    configParser.read(configFilePath)
-    DEVICE_NO = configParser.get('DEVICE-INFO', 'deviceNo')
-    UDP_PORT = configParser.get('DEVICE-INFO', 'udpPort')
+    brain = Brain()
+    while not brain.closed:
+        brain.run()
 
-    sckt = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sckt.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-    #controlRobot(sckt)
-    
-    camera = PiCamera()
-    camera.resolution = (640, 480)
-    camera.framerate = 32
-    rawCapture = PiRGBArray(camera, size=(640, 480))
-    
+class Brain():
+    Init = 0
+    Start = 1
+    Running = 2
 
-    #vs = VideoStream(src=0).start()
-    time.sleep(1.0)
+    def __init__(self, ip= '127.0.0.1', port = 5000, bsize=1024, totalRobotCount_=4):
+        self.state = self.Init
+        self.TCP_IP = ip    #ip
+        self.TCP_PORT = port    #port
+        self.BUFFER_SIZE = bsize    #Buffer size
 
-    lower = (0, 0, 0)
-    upper = (255, 255, 255)
-
-    for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-        image = frame.array
-        #image = vs.read()
-        blurred = cv2.GaussianBlur(image, (11, 11), 0)
-        hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
-
-        k = cv2.waitKey(5) & 0xFF
-        if (k == 27):
-            print(lower, upper)
-            break
-        if (k==97):
-            robotLow, robotHigh, obstacleLow, obstacleHigh= configureColorRange(image, hsv)
-            lowerRobot=(int(robotLow[0]), int(robotLow[1]), int(robotLow[2]))
-            upperRobot=(int(robotHigh[0]), int(robotHigh[1]), int(robotHigh[2]))
-            lowerObstacle=(int(obstacleLow[0]), int(obstacleLow[1]), int(obstacleLow[2]))
-            upperObstacle=(int(obstacleHigh[0]), int(obstacleHigh[1]), int(obstacleHigh[2]))
-            cv2.destroyAllWindows()
-        #image=filterImageForRobot(image, hsv, lower, upper)
-        mask = cv2.inRange(hsv.copy(), lowerRobot, upperRobot)   
-        kernel = np.ones((5,5),np.uint8)
-        mask = cv2.erode(mask, kernel, iterations=1)
-        mask = cv2.dilate(mask, kernel, iterations=1)
-        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, None)
-        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, None)
-        cntsRobot = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
-            cv2.CHAIN_APPROX_SIMPLE)
-        cntsRobot = imutils.grab_contours(cntsRobot)
         
-        
-        maskObstacle = cv2.inRange(hsv.copy(), lowerObstacle, upperObstacle)   
-        maskObstacle = cv2.erode(maskObstacle, None, iterations=2)
-        maskObstacle = cv2.dilate(maskObstacle, None, iterations=2)
-        maskObstacle = cv2.morphologyEx(maskObstacle, cv2.MORPH_OPEN, None)
-        maskObstacle = cv2.morphologyEx(maskObstacle, cv2.MORPH_CLOSE, None)
-        cntsObstacle = cv2.findContours(maskObstacle.copy(), cv2.RETR_EXTERNAL,
-            cv2.CHAIN_APPROX_SIMPLE)
-        cntsObstacle = imutils.grab_contours(cntsObstacle)
-        
-        if len(cntsRobot) >= 2:
-            #Sort the contours by the area and check is it big enough to be a robot
-            cntsRobot.sort(key=cv2.contourArea, reverse=True)
-            if (cv2.contourArea(cntsRobot[0]) / cv2.contourArea(cntsRobot[1])) < 5 and cv2.contourArea(cntsRobot[0])>200:
-                #cntsRobot,bbox=sort_contours(cntsRobot[:2])
-                x1,y1 = getCenterOfBox(cntsRobot[0])
-                x2,y2 = getCenterOfBox(cntsRobot[1])
-                angle = int(math.degrees(math.atan2(y1-y2,x1-x2)))
-                drawBox(cntsRobot[0], image, (x1,y1))
-                drawBox(cntsRobot[1], image, (x2,y2))
-                cv2.putText(image,'Angle: '+str(angle),(30, 30), 
-                    cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
-                if cv2.contourArea(cntsRobot[0])> cv2.contourArea(cntsRobot[1]):
-                    #small box is the front of the robot and
-                    #left box is bigger than the right box, so its facing the right side 
-                    cv2.arrowedLine(image, (x1, y1), (x2, y2), (255, 0, 0), 3)
-                else: 
-                    #small box is the front of the robot and
-                    #right box is bigger than the left box, so its facing the left side
-                    cv2.arrowedLine(image, (x2, y2), (x1, y1), (255, 0, 0), 3)
+        self.totalRobotCount= totalRobotCount_
+        self.closed = False
 
-                
-                if len(cntsObstacle)>0:
-                    cntsObstacle.sort(key=cv2.contourArea, reverse=True)
-                    #check that there is an obstacle contour and its area is bigger than 200
-                    if cv2.contourArea(cntsObstacle[0])>200:
 
-                        x3,y3 = getCenterOfBox(cntsObstacle[0])
-                        angle2 = int(math.degrees(math.atan2(y1-y3,x1-x3)))
-                        cv2.putText(image,'Angle2: '+str(angle2),(30, 100), 
-                            cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
-                        cv2.arrowedLine(image, (x1, y1), (x3, y3), (255, 0, 255), 3)
-                        decideAction(angle, angle2)
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.bind((self.TCP_IP, self.TCP_PORT))
+        s.listen(1)
+
+        self.conn, self.addr = s.accept()
+
+        print ('Connection address:', self.addr)
+        self.vs = VideoStream(src=0, usePiCamera=False).start()
+
+        pass
+    def configure(self):
+        upper = (0, 0, 0)
+        lower = (255, 255, 255)
+        lowerRobot1 = lowerRobot2 = lowerRobot3 = lowerRobot4 = lowerObstacle = lower
+        upperRobot1 = upperRobot2 = upperRobot3 = upperRobot4 = upperObstacle = upper
+        while True:
+            image = self.vs.read()
+            blurred2 = cv2.GaussianBlur(image.copy(), (25, 25), 0)
+            blurred = cv2.blur(image.copy(),(25,25))
+            hsv = cv2.cvtColor(blurred.copy(), cv2.COLOR_BGR2HSV)
+
+            k = cv2.waitKey(5) & 0xFF
+            if (k == 97):  #if key 'a' is pressed
+                (lowerRobot1, upperRobot1), (lowerRobot2, upperRobot2), \
+                    (lowerRobot3, upperRobot3), (lowerRobot4, upperRobot4), \
+                    (lowerObstacle, upperObstacle) = configureColorRange(image, hsv)    
+                #robotLow, robotHigh, obstacleLow, obstacleHigh= configureColorRange(image, hsv)
+                cv2.destroyAllWindows()
+                return (lowerRobot1, upperRobot1), (lowerRobot2, upperRobot2), \
+                    (lowerRobot3, upperRobot3), (lowerRobot4, upperRobot4), \
+                    (lowerObstacle, upperObstacle)
+            cv2.imshow('Robot Detector: Press a to configure filters', image)
     
-        #newImg=cv2.bitwise_or(mask, maskObstacle)
-        cv2.imshow('Robot Detector: Press a to configure filters', image)
-        rawCapture.truncate(0)
+    def findAllRobots(self, iteration, lowerRobot1, upperRobot1, lowerRobot2, upperRobot2, lowerRobot3, upperRobot3, lowerRobot4, upperRobot4, lowerObstacle, upperObstacle):
+        listR1x = np.array([])
+        listR1y = np.array([])
+        listR1angle = np.array([])
+        lastResetCounterR1 = 0
 
-    closeSocket(sckt)
-    #vs.stop()
-    cv2.destroyAllWindows()
+        listR2x = np.array([])
+        listR2y = np.array([])
+        listR2angle = np.array([])
+        
 
-def drawBox(box, image, center):
-    rect=cv2.minAreaRect(box)
-    nbox=cv2.boxPoints(rect)
-    nbox=np.int0(nbox)
-    cv2.drawContours(image,[nbox], 0,(0,0,255),2)
-    cv2.circle(image, center, 5, (0, 0, 255), -1)
+        listR3x = np.array([])
+        listR3y = np.array([])
+        listR3angle = np.array([])
+        
 
-def getCenterOfBox(box):
-    M = cv2.moments(box)
-    return (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
+        listR4x = np.array([])
+        listR4y = np.array([])
+        listR4angle = np.array([])
+
+        x1,y1,degree1, x2,y2,degree2, x3,y3,degree3, x4,y4,degree4 = None, None, None, None, None, None, None, None, None, None, None, None
+        listObsx, listObsy = None, None
+
+        while True:
+            image = self.vs.read()
+            blurred2 = cv2.GaussianBlur(image.copy(), (25, 25), 0)
+            blurred = cv2.blur(image.copy(),(25,25))
+            hsv = cv2.cvtColor(blurred.copy(), cv2.COLOR_BGR2HSV)
+        
+            orangeImage = hsv.copy()
+            robotImage1 = hsv.copy()
+            robotImage2 = hsv.copy()
+            robotImage3 = hsv.copy()
+            robotImage4 = hsv.copy()
+        
+            cx1, cy1, angle1, filterRobot1 = triangle(lowerRobot1, upperRobot1, robotImage1, image) 
+            if cx1:                   
+                listR1x = np.append(listR1x, cx1)                
+                listR1y = np.append(listR1y, cy1)            
+                listR1angle = np.append(listR1angle, angle1)
+
+            cx2, cy2, angle2, filterRobot2 = triangle(lowerRobot2, upperRobot2, robotImage2, image) 
+            if cx2:
+                listR2x = np.append(listR2x, cx2)                
+                listR2y = np.append(listR2y, cy2)            
+                listR2angle = np.append(listR2angle, angle2)
+
+            cx3, cy3, angle3, filterRobot3 = triangle(lowerRobot3, upperRobot3, robotImage3, image) 
+            if cx3:
+                listR3x = np.append(listR3x, cx3)                
+                listR3y = np.append(listR3y, cy3)            
+                listR3angle = np.append(listR3angle, angle3)
+
+            cx4, cy4, angle4, filterRobot4 = triangle(lowerRobot4, upperRobot4, robotImage4, image) 
+            if cx4:
+                listR4x = np.append(listR4x, cx4)                
+                listR4y = np.append(listR4y, cy4)            
+                listR4angle = np.append(listR4angle, angle4)
+
+            cntsObstacle, filterOrange = filterAndFindContours(lowerObstacle, upperObstacle, orangeImage)
+            if len(cntsObstacle) >= 1:
+                listObsx = np.array([])               
+                listObsy = np.array([])       
+                for i in range(len(cntsObstacle)):
+                    if (cv2.contourArea(cntsObstacle[i])>50):
+                        x1,y1 = getCenterOfBox(cntsObstacle[i])
+                        listObsx = np.append(listObsx, x1) 
+                        listObsy = np.append(listObsy, y1) 
+
+
+            if lastResetCounterR1>iteration:
+                break
+            lastResetCounterR1+=1
+        if(len(listR1x)>0):
+            x1 = int(np.mean(listR1x))
+            y1 = int(np.mean(listR1y))
+            degree1 = stats.circmean(listR1angle, low = -180, high=180)
+
+        if(len(listR2x)>0):
+            x2 = int(np.mean(listR2x))
+            y2 = int(np.mean(listR2y))
+            degree2 = stats.circmean(listR2angle, low = -180, high=180)
+
+        if(len(listR3x)>0):
+            x3 = int(np.mean(listR3x))
+            y3 = int(np.mean(listR3y))
+            degree3 = stats.circmean(listR3angle, low = -180, high=180)
+
+        if(len(listR4x)>0):
+            x4 = int(np.mean(listR4x))
+            y4 = int(np.mean(listR4y))
+            degree4 = stats.circmean(listR4angle, low = -180, high=180)
+
+
+        return x1, y1, degree1, x2, y2, degree2, x3, y3, degree3, x4, y4, degree4, listObsx, listObsy
+
+    def run(self):
+        if self.state == self.Init:
+            # Get the capture and identify the robots and objects.
+            # Calculate the routes
+            # Send the each routes to responsible robots.
+            # Set current robot to zero
+            # Set state to running
+
+            (lowerRobot1, upperRobot1), (lowerRobot2, upperRobot2), \
+                    (lowerRobot3, upperRobot3), (lowerRobot4, upperRobot4), \
+                    (lowerObstacle, upperObstacle) = self.configure()
+            
+
+            # identify for 20 iterations and calculate the average x, y and angles for the robots
+            # after this process, identify these(robot x values are scaler, but obstacles x's is a list):
+            #(r1x, r1y)
+            #(r2x, r2y)
+            #(r3x, r3y)
+            #(r4x, r4y)
+            #(obsx, obsy)
+            x1, y1, degree1, x2, y2, degree2, x3, y3, degree3, x4, y4, degree4, listObsx, listObsy = \
+                self.findAllRobots(50, lowerRobot1, upperRobot1, lowerRobot2, upperRobot2, lowerRobot3, upperRobot3, \
+                    lowerRobot4, upperRobot4, lowerObstacle, upperObstacle)
+            
+            print(x1, y1, degree1, x2, y2, degree2, x3, y3, degree3, x4, y4, degree4, listObsx, listObsy)
+
+            # after that, send these information to route calculator.
+            #start, targets = routeCalculator(r1x, r1y, r2x, r2y, r3x, r3y, r4x, r4y, obsx, obsy)
+
+            #TODO: these start and target values will be calculated in route calculator.
+            start = State(-20.0, 15.0, math.radians(90))
+            targets = [State(-20.0, 16.0, 0.0)]
+
+            self.conn.send(Message.createRouteMessage(start, targets).__str__().encode())
+            
+            data = self.conn.recv(self.BUFFER_SIZE)
+            message = Message.create(data.decode())
+            # TODO: Identifying the current robot location is not implemented yet
+            if message.type == Message.OkMessageType:
+                self.robotIndex = 0
+                self.state = self.Start
+
+        elif self.state == self.Start:
+            # If current robot index is over than number of robots:
+                # switch state to init TODO: or finish
+            # else:
+                # send start message to the current robot
+                # set state to running
+
+            if self.robotIndex == self.totalRobotCount:
+                self.close()
+            else:
+                #TODO:In sending message, later we need to implement which robot we are sending the message
+                self.conn.send(Message.createStartMessage().__str__().encode())
+                self.state = self.Running
+            
+
+        elif self.state == self.Running:
+            # Listen the socket until received a message
+            # If the message is a GetLocationMessage:
+                # Then identify the current robot
+                # Send a LocationMessage to the robot including the location of the robot
+            # else if the message is EndMessage:
+                # set current robot index to next robot index
+                # set state to start
+            # else do nothing, pass
+
+            data = self.conn.recv(self.BUFFER_SIZE)
+            message = Message.create(data.decode())
+            # TODO: Identifying the current robot location is not implemented yet
+            if message.type == Message.GetLocationMessageType:
+
+                # Calculate the robot location for 20 iteration and send the average values
+                # self.robotIndex can help to identify robot color
+                x1, y1, degree1, x2, y2, degree2, x3, y3, degree3, x4, y4, degree4, listObsx, listObsy = \
+                self.findAllRobots(20, lowerRobot1, upperRobot1, lowerRobot2, upperRobot2, lowerRobot3, upperRobot3, \
+                    lowerRobot4, upperRobot4, lowerObstacle, upperObstacle)
+
+                if self.robotIndex == 0:
+                    self.conn.send(Message.createLocationMessage(State(x1, y1, math.radians(degree1))).__str__().encode())
+
+                elif self.robotIndex == 1:
+                    self.conn.send(Message.createLocationMessage(State(x2, y2, math.radians(degree2))).__str__().encode())
+
+                elif self.robotIndex == 2:
+                    self.conn.send(Message.createLocationMessage(State(x3, y3, math.radians(degree3))).__str__().encode())
+
+                else:
+                    self.conn.send(Message.createLocationMessage(State(x4, y4, math.radians(degree4))).__str__().encode())
+
+            elif message.type == Message.EndMessageType:
+                self.robotIndex = self.robotIndex + 1
+                self.state = self.Start
+
+            else:
+                pass
+
+        else:
+            pass
+
+        
+
+    def close(self):
+        self.closed = True
+        self.conn.close()
+    
+
+def triangle(lower, upper, image, originalImage):
+    cntsTriangle, filterTriangle = filterAndFindContours(lower, upper, image)
+    cntsTriangle.sort(key=cv2.contourArea, reverse=True)
+    #print(cntsTriangle[0])
+
+    if len(cntsTriangle) > 0 :
+        peri = cv2.arcLength(cntsTriangle[0], True)
+        approx = cv2.approxPolyDP(cntsTriangle[0], 0.04 * peri, True)
+        if len(approx) == 3:
+            x1, y1, x2, y2, x3, y3 = approx[0,0,0], approx[0,0,1], \
+                approx[1,0,0],approx[1,0,1],approx[2,0,0], approx[2,0,1]
+            # filter the image for the triangle, after that use contours for getting the A, B and C point for triangle. 
+            # calculate the distances between AB, AC and BC. (A is (x1,y1), B is (x2,y2), C is (x3,y3))
+            
+            distAB = math.sqrt((x1-x2)**2+(y1-y2)**2)
+            distAC = math.sqrt((x1-x3)**2+(y1-y3)**2)
+            distBC = math.sqrt((x2-x3)**2+(y2-y3)**2)
+
+            # find which one is the smallest, using if else blocks
+            # in the if else block, make sure (x1,y1) is more left side point, (x2, y2) is the second and (x3, y3) the other point
+            if (distAB < distAC and distAB < distBC):
+                if x1<x2:
+                    nx1, ny1, nx2, ny2, nx3, ny3 = x1, y1, x2, y2, x3, y3
+                else:
+                    nx1, ny1, nx2, ny2, nx3, ny3 = x2, y2, x1, y1, x3, y3
+
+            elif (distAC < distAB and distAC < distBC):
+                if x1<x3:
+                    nx1, ny1, nx2, ny2, nx3, ny3 = x1, y1, x3, y3, x2, y2
+                else:
+                    nx1, ny1, nx2, ny2, nx3, ny3 = x3, y3, x1, y1, x2, y2
+
+            else:
+                if x2<x3:
+                    nx1, ny1, nx2, ny2, nx3, ny3 = x2, y2, x3, y3, x1, y1
+                else:
+                    nx1, ny1, nx2, ny2, nx3, ny3 = x3, y3, x2, y2, x1, y1
+
+            # after that use this formula to calculate the angle:
+            # degree = math.degrees(math.radians(90) - math.atan2(y2-y1, x2-x1))
+            degree = math.degrees(math.radians(90) + math.atan2(ny2-ny1, nx2-nx1))
+            
+            #print(nx1, ny1, nx2, ny2, nx3, ny3)
+            # calculate the middle point, to calculate use this formula:
+            # tmpx, tmpy = ((x1+x2)/2) + ((y1+y2)/2) 
+            # cx, cy = tmpx + (x3 - tmpx)/3, tmpx + (x3 - tmpx)/3
+            # return cx, cy, degree
+            tmpx, tmpy = ((nx1+nx2)/2), ((ny1+ny2)/2) 
+            cx, cy = tmpx + (nx3 - tmpx)/3, tmpy + (ny3 - tmpy)/3
+
+            if cy > tmpy:
+                degree =  degree + 180
+
+            #cv2.circle(originalImage, (cx, cy), 5, (0, 0, 255), -1)
+            #cv2.circle(originalImage, (nx1, ny1), 5, (0, 0, 255), -1)
+            #cv2.circle(originalImage, (nx2, ny2), 5, (0, 0, 255), -1)
+            #cv2.putText(originalImage,'angle= '+str(int(degree)),(cx+10,cy+10), 
+            #            cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 0, 0), 1)
+            
+            #cv2.drawContours(originalImage, [cntsTriangle[0]], -1, (0, 255, 0), 2)
+            return cx, cy, degree, filterTriangle
+        else:
+            return None, None, None, filterTriangle
+    else :
+        return None, None, None, filterTriangle
+
+def filterAndFindContours(lower, upper, image, doMorph=True, doErode=True, doDilate=False):
+    mask = cv2.inRange(image, lower, upper)   
+
+    kernel = np.ones((5,5),np.uint8)
+    if doErode:
+        mask = cv2.erode(mask, kernel, iterations=3)
+    if doDilate:
+        mask = cv2.dilate(mask, kernel, iterations=2)
+    if doMorph:
+        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+    #cnts = cv2.findContours(mask, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+    cnts = cv2.findContours(mask, cv2.RETR_EXTERNAL,
+        cv2.CHAIN_APPROX_SIMPLE)
+        
+    cnts = imutils.grab_contours(cnts)
+    return cnts, mask
 
 def configureColorRange(image, hsvImage):
-    r1 = cv2.selectROI("Select robot color", image)
-    robotImg = hsvImage[int(r1[1]):int(r1[1]+r1[3]), int(r1[0]):int(r1[0]+r1[2])]
-    r2 = cv2.selectROI("Select obstacle color", image)
-    obstacleImg = hsvImage[int(r2[1]):int(r2[1]+r2[3]), int(r2[0]):int(r2[0]+r2[2])]
+    r1 = cv2.selectROI("Select robot1 color", image)
+    robotImg1 = hsvImage[int(r1[1]):int(r1[1]+r1[3]), int(r1[0]):int(r1[0]+r1[2])]
+    r2 = cv2.selectROI("Select robot2 color", image)
+    robotImg2 = hsvImage[int(r2[1]):int(r2[1]+r2[3]), int(r2[0]):int(r2[0]+r2[2])]
+    r3 = cv2.selectROI("Select robot3 color", image)
+    robotImg3 = hsvImage[int(r3[1]):int(r3[1]+r3[3]), int(r3[0]):int(r3[0]+r3[2])]
+    r4 = cv2.selectROI("Select robot4 color", image)
+    robotImg4 = hsvImage[int(r4[1]):int(r4[1]+r4[3]), int(r4[0]):int(r4[0]+r4[2])]
+    r5 = cv2.selectROI("Select obstacle color", image)
+    obstacleImg = hsvImage[int(r5[1]):int(r5[1]+r5[3]), int(r5[0]):int(r5[0]+r5[2])]
 
-    robotLow, robotHigh, robotAvgL, robotAvgH= findRanges(robotImg)
+    robot1Low, robot1High, robot1AvgL, robot1AvgH= findRanges(robotImg1)
+    robot2Low, robot2High, robot2AvgL, robot2AvgH= findRanges(robotImg2)
+    robot3Low, robot3High, robot3AvgL, robot3AvgH= findRanges(robotImg3)
+    robot4Low, robot4High, robot4AvgL, robot4AvgH= findRanges(robotImg4)
     obstacleLow, obstacleHigh, obstacleAvgL, obstacleAvgH = findRanges(obstacleImg)
     
-    #print( robotLow, robotHigh, obstacleLow, obstacleHigh)
-    return robotLow, robotHigh, obstacleLow, obstacleHigh
+    robot1Low=(int(robot1Low[0]), int(robot1Low[1]), int(robot1Low[2]))
+    robot1High=(int(robot1High[0]), int(robot1High[1]), int(robot1High[2]))
+
+    robot2Low=(int(robot2Low[0]), int(robot2Low[1]), int(robot2Low[2]))
+    robot2High=(int(robot2High[0]), int(robot2High[1]), int(robot2High[2]))
+
+    robot3Low=(int(robot3Low[0]), int(robot3Low[1]), int(robot3Low[2]))
+    robot3High=(int(robot3High[0]), int(robot3High[1]), int(robot3High[2]))
+
+    robot4Low=(int(robot4Low[0]), int(robot4Low[1]), int(robot4Low[2]))
+    robot4High=(int(robot4High[0]), int(robot4High[1]), int(robot4High[2]))
+
+    obstacleLow=(int(obstacleLow[0]), int(obstacleLow[1]), int(obstacleLow[2]))
+    obstacleHigh=(int(obstacleHigh[0]), int(obstacleHigh[1]), int(obstacleHigh[2]))
+    
+    print((robot1Low, robot1High), (robot2Low, robot2High), (robot3Low, robot3High), (robot4Low, robot4High), (obstacleLow, obstacleHigh))
+    #return robotLow, robotHigh, obstacleLow, obstacleHigh
+    return (robot1Low, robot1High), (robot2Low, robot2High), (robot3Low, robot3High), (robot4Low, robot4High), (obstacleLow, obstacleHigh)
     #return robotAvgL, robotAvgH, obstacleAvgL, obstacleAvgH
     
 def findRanges(image):
@@ -172,48 +433,15 @@ def findRanges(image):
         tmpS=tmpS/(count)
         tmpV=tmpV/(count)
 
-    return (max(0, lowH-10), max(0, lowS-10), max(0, lowV-10)), (min(255, highH+10), min(255, highS+10), min(255, highV+10)), (max(0, tmpH-30), max(0, tmpS-30), max(0, tmpV-30)), (min(255, tmpH+30), min(255, tmpS+30), min(255, tmpV+30))
+    return (max(0, lowH-5), max(0, lowS-15), max(0, lowV-25)), \
+        (min(255, highH+5), min(255, highS+15), min(255, highV+25)), \
+        (max(0, tmpH-10), max(0, tmpS-10), max(0, tmpV-20)), \
+        (min(255, tmpH+10), min(255, tmpS+10), min(255, tmpV+20))
 
 
-def decideAction(robotAngle, obstacleAngle):
-    angle = obstacleAngle - robotAngle
-    #if angle is between -15, +15 degrees, then move forward 
-    if angle >= -15 and angle <= 15:
-        print("forward")
-        sendMessage(sckt, "255.255.255.255", 5000, 0, "Forward", 1)
-    #else if angle is between 15,180 degrees then turn right
-    elif angle > 15 and angle < 180:
-        print("right")
-        sendMessage(sckt, "255.255.255.255", 5000, 0, "Right", 1)
-    #else if angle is between -15,-180 degrees then turn left
-    elif angle < -15 and angle > -180:
-        print("left")
-        sendMessage(sckt, "255.255.255.255", 5000, 0, "Left", 1)
+def fixAngle(angle):
+        return math.atan2(math.sin(angle), math.cos(angle))
 
 
-def sendMessage(sckt, ip, port, device, action, duration):
-    message="Device:"+str(device)+", Action: "+action+", Duration: "+str(duration)
-    sckt.sendto(message, (ip, port))
-
-def closeSocket(sckt):
-    sckt.close()
-
-def signal_handler(sig, frame):
-    sys.exit(0)
-
-
-def controlRobot(sckt):
-    while True:
-        myinput = raw_input("Enter your input ->")
-        if myinput == "w":
-            sendMessage(sckt, "255.255.255.255", 5000, 0, "Forward", 1)
-        elif myinput == "a":
-            sendMessage(sckt, "255.255.255.255", 5000, 0, "Left", 1)
-        elif myinput == "s":
-            sendMessage(sckt, "255.255.255.255", 5000, 0, "Backward", 1)
-        elif myinput == "d":
-            sendMessage(sckt, "255.255.255.255", 5000, 0, "Right", 1)
-        else:
-            break
 if __name__ == "__main__":
     main()

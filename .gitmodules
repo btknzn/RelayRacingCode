@@ -1,3 +1,6 @@
 [submodule "controller/DifferentialDrivePathTracking"]
 	path = controller/DifferentialDrivePathTracking
 	url = https://github.com/BurakDmb/DifferentialDrivePathTracking.git
+[submodule "brain/DifferentialDrivePathTracking"]
+	path = brain/DifferentialDrivePathTracking
+	url = https://github.com/BurakDmb/DifferentialDrivePathTracking
