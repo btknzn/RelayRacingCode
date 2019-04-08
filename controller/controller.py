@@ -1,5 +1,5 @@
 import socket
-import ConfigParser
+import configparser
 import time
 import OPi.GPIO as GPIO
 import os
@@ -22,7 +22,7 @@ class PiController(Controller):
     Running = 2
     Iterating = 3
 
-    def __init__(self, ip= '127.0.0.1', port = 5010, bsize=1024):
+    def __init__(self, ip= '127.0.0.1', port = 5000, bsize=1024):
         self.state = self.Init
         self.TCP_IP = ip    #ip
         self.TCP_PORT = port    #port
@@ -130,6 +130,7 @@ class PiController(Controller):
                 if message and message.type == Message.LocationMessageType:
                     self.current = message.location
                     v, w = self.iteratePID()
+                    #print(v,w)
                     self.makeAction(v, w)
                     
                 else:
@@ -168,7 +169,6 @@ def makeMove(vr, vl):
 
 
 def main():
-
     
     controller = PiController()
     signal.signal(signal.SIGINT, controller.signal_handler)
@@ -178,7 +178,7 @@ def main():
 def main2():
     signal.signal(signal.SIGINT, signal_handler)
 
-    configParser = ConfigParser.RawConfigParser()   
+    configParser = configparser.RawConfigParser()   
     configFilePath = r'config.txt'
     configParser.read(configFilePath)
     global DEVICE_NO
@@ -319,4 +319,4 @@ def makeAction(action, duration):
 
 
 if __name__ == "__main__":
-    main2()
+    main()
