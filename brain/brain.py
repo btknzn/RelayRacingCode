@@ -27,7 +27,7 @@ class Brain():
     Start = 1
     Running = 2
 
-    def __init__(self, ip= '127.0.0.1', port = 5000, bsize=1024, totalRobotCount_=4):
+    def __init__(self, ip= '10.42.0.1', port = 5000, bsize=1024, totalRobotCount_=4):
         self.state = self.Init
         self.TCP_IP = ip    #ip
         self.TCP_PORT = port    #port
@@ -175,9 +175,9 @@ class Brain():
             # Set current robot to zero
             # Set state to running
 
-            (lowerRobot1, upperRobot1), (lowerRobot2, upperRobot2), \
-                    (lowerRobot3, upperRobot3), (lowerRobot4, upperRobot4), \
-                    (lowerObstacle, upperObstacle) = self.configure()
+            (self.lowerRobot1, self.upperRobot1), (self.lowerRobot2, self.upperRobot2), \
+                    (self.lowerRobot3, self.upperRobot3), (self.lowerRobot4, self.upperRobot4), \
+                    (self.lowerObstacle, self.upperObstacle) = self.configure()
             
 
             # identify for 20 iterations and calculate the average x, y and angles for the robots
@@ -188,8 +188,8 @@ class Brain():
             #(r4x, r4y)
             #(obsx, obsy)
             x1, y1, degree1, x2, y2, degree2, x3, y3, degree3, x4, y4, degree4, listObsx, listObsy = \
-                self.findAllRobots(50, lowerRobot1, upperRobot1, lowerRobot2, upperRobot2, lowerRobot3, upperRobot3, \
-                    lowerRobot4, upperRobot4, lowerObstacle, upperObstacle)
+                self.findAllRobots(50, self.lowerRobot1, self.upperRobot1, self.lowerRobot2, self.upperRobot2, self.lowerRobot3, self.upperRobot3, \
+                    self.lowerRobot4, self.upperRobot4, self.lowerObstacle, self.upperObstacle)
             
             print(x1, y1, degree1, x2, y2, degree2, x3, y3, degree3, x4, y4, degree4, listObsx, listObsy)
 
@@ -242,19 +242,28 @@ class Brain():
                 # Calculate the robot location for 20 iteration and send the average values
                 # self.robotIndex can help to identify robot color
                 x1, y1, degree1, x2, y2, degree2, x3, y3, degree3, x4, y4, degree4, listObsx, listObsy = \
-                self.findAllRobots(20, lowerRobot1, upperRobot1, lowerRobot2, upperRobot2, lowerRobot3, upperRobot3, \
-                    lowerRobot4, upperRobot4, lowerObstacle, upperObstacle)
+                self.findAllRobots(20, self.lowerRobot1, self.upperRobot1, self.lowerRobot2, self.upperRobot2, self.lowerRobot3, self.upperRobot3, \
+                    self.lowerRobot4, self.upperRobot4, self.lowerObstacle, self.upperObstacle)
 
                 if self.robotIndex == 0:
+                    if not(x1 and y1 and degree1):
+                        x1, y1, degree1 = 0, 0, 0
+
                     self.conn.send(Message.createLocationMessage(State(x1, y1, math.radians(degree1))).__str__().encode())
 
                 elif self.robotIndex == 1:
+                    if not(x2 and y2 and degree2):
+                        x2, y2, degree2 = 0, 0, 0
                     self.conn.send(Message.createLocationMessage(State(x2, y2, math.radians(degree2))).__str__().encode())
 
                 elif self.robotIndex == 2:
+                    if not(x3 and y3 and degree3):
+                        x3, y3, degree3 = 0, 0, 0
                     self.conn.send(Message.createLocationMessage(State(x3, y3, math.radians(degree3))).__str__().encode())
 
                 else:
+                    if not(x4 and y4 and degree4):
+                        x4, y4, degree4 = 0, 0, 0
                     self.conn.send(Message.createLocationMessage(State(x4, y4, math.radians(degree4))).__str__().encode())
 
             elif message.type == Message.EndMessageType:

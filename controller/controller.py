@@ -170,7 +170,7 @@ def makeMove(vr, vl):
 
 def main():
     
-    controller = PiController()
+    controller = PiController(ip='10.42.0.1')
     signal.signal(signal.SIGINT, controller.signal_handler)
     while not controller.closed:
         controller.run()
