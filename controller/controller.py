@@ -188,6 +188,8 @@ class PiController(Controller):
         #TODO: Needs to be implemented
         gpio.output(self.IN1, 1)
         gpio.output(self.IN2, 1)
+        gpio.output(self.IN3, 1)
+        gpio.output(self.IN4, 1)
         #time.sleep(1)
         #gpio.output(self.IN1, 0)
         #gpio.output(self.IN2, 0)
