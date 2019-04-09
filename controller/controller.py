@@ -6,6 +6,11 @@ import os
 import signal
 import sys
 
+from pyA20.gpio import gpio
+from pyA20.gpio import connector
+from time import sleep
+from orangepwm import *
+
 import math
 sys.path.insert(0, "DifferentialDrivePathTracking/")
 from main import Controller
@@ -32,11 +37,34 @@ class PiController(Controller):
         self.socket.connect((self.TCP_IP, self.TCP_PORT))
 
         self.closed = False
+
+        self.IN1 = connector.gpio3p10
+        self.IN2 = connector.gpio3p11
+        self.IN3 = connector.gpio3p13
+        self.IN4 = connector.gpio3p15
+        self.PWMPIN1 = connector.gpio3p11
+        self.PWMPIN2 = connector.gpio3p11
+
+        gpio.init()
+        gpio.setcfg(self.IN1, gpio.OUTPUT)
+        gpio.setcfg(self.IN2, gpio.OUTPUT)
+        gpio.setcfg(self.IN3, gpio.OUTPUT)
+        gpio.setcfg(self.IN4, gpio.OUTPUT)
+        gpio.setcfg(self.PWMPIN1, gpio.OUTPUT)
+        gpio.setcfg(self.PWMPIN2, gpio.OUTPUT)
+        self.pwm1 = OrangePwm(100, self.PWMPIN1)
+        self.pwm2 = OrangePwm(100, self.PWMPIN2)
+        self.pwm1.start(100)
+        self.pwm2.start(100)
+
+
         
     
     def close(self):
         self.closed = True
         self.socket.close()
+        self.pwm1.stop()
+        self.pwm1.stop()
 
 
     def run(self):
@@ -148,25 +176,62 @@ class PiController(Controller):
 
     def makeAction(self, v, w):
 
-        nvr, nvl = self.normalize(v,w)
+        vr, vl = self.normalize(v,w)
 
         # Motor code to 
         #print(nvr, nvl)
-        makeMove(nvr, nvl)
+
+        # set the pwmRight and pwmLeft pins to given vr and vl voltages
+        # sleep for dt seconds
+        # set the pwmLeft and 
+        #TODO: Needs to be implemented
+        gpio.output(self.IN1, gpio.HIGH)
+        gpio.output(self.IN2, gpio.LOW)
+        time.sleep(self.dt)
+        gpio.output(self.IN1, gpio.LOW)
+        gpio.output(self.IN2, gpio.LOW)
+        gpio.output(self.IN3, gpio.LOW)
+        gpio.output(self.IN4, gpio.LOW)
+        return
+
+
+        if (vr >= 0):
+            gpio.output(self.IN1, gpio.HIGH)
+            gpio.output(self.IN2, gpio.LOW)
+            pwn=self.calculatePwnValue(vr)
+            self.pwm1.changeDutyCycle(pwn)   
+        else:
+            gpio.output(self.IN1, gpio.LOW)
+            gpio.output(self.IN2, gpio.HIGH)
+            pwn=self.calculatePwnValue(vr)
+            self.pwm1.changeDutyCycle(pwn)
+        if (vl>=0):
+            gpio.output(self.IN3, gpio.HIGH)
+            gpio.output(self.IN4, gpio.LOW)
+            pwn=self.calculatePwnValue(vl)
+            self.pwm2.changeDutyCycle(pwn)
+        else:
+            gpio.output(self.IN3, gpio.LOW)
+            gpio.output(self.IN4, gpio.HIGH)
+            pwn=self.calculatePwnValue(vl)
+            self.pwm2.changeDutyCycle(pwn)
+        time.sleep(self.dt)
+        gpio.output(self.IN1, gpio.LOW)
+        gpio.output(self.IN2, gpio.LOW)
+        gpio.output(self.IN3, gpio.LOW)
+        gpio.output(self.IN4, gpio.LOW)
+
         return
 
     def signal_handler(self, sig, frame):
         self.close()
-        cleanupGPIO()
         sys.exit(0)
+  
 
-def makeMove(vr, vl):
-    # set the pwmRight and pwmLeft pins to given vr and vl voltages
-    # sleep for dt seconds
-    # set the pwmLeft and 
-    #TODO: Needs to be implemented
-    pass
-
+    def calculatePwnValue(self, power):
+        power=abs(power)
+        pwn=power*100
+        return pwn
 
 def main():
     
@@ -174,148 +239,6 @@ def main():
     signal.signal(signal.SIGINT, controller.signal_handler)
     while not controller.closed:
         controller.run()
-
-def main2():
-    signal.signal(signal.SIGINT, signal_handler)
-
-    configParser = configparser.RawConfigParser()   
-    configFilePath = r'config.txt'
-    configParser.read(configFilePath)
-    global DEVICE_NO
-    DEVICE_NO = configParser.get('DEVICE-INFO', 'deviceNo')
-    global UDP_PORT
-    UDP_PORT = configParser.get('DEVICE-INFO', 'udpPort')
-    
-    IN1 = int(configParser.get('DEVICE-INFO', 'in1'))
-    IN2 = int(configParser.get('DEVICE-INFO', 'in2'))
-    IN3 = int(configParser.get('DEVICE-INFO', 'in3'))
-    IN4 = int(configParser.get('DEVICE-INFO', 'in4'))
-
-    initGPIO()
-    initPin(IN1)
-    initPin(IN2)
-    initPin(IN3)
-    initPin(IN4)
-
-
-    client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-    client.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-    client.bind(("", 5000))
-    print('Press Ctrl+C to quit')
-    while True:
-        data, addr = client.recvfrom(1024)
-        print("Recieved data")
-        parseData(data)
-
-    client.close()
-
-def signal_handler(sig, frame):
-        cleanupGPIO()
-        sys.exit(0)
-
-def initGPIO():
-    if socket.gethostname() == 'orangepizero':
-        GPIO.setmode(GPIO.BOARD)
-
-#Initializes the pins to output function
-#all of the pins which are going to be used needs to be initialized.
-def initPin(pinNo):
-    if socket.gethostname() == 'orangepizero':
-        GPIO.setup(pinNo, GPIO.OUT)
-
-
-#Sets to logic high(3.3V)
-def setPinHigh(pinNo):
-    if socket.gethostname() == 'orangepizero':
-        GPIO.output(pinNo, GPIO.HIGH)
-
-#Sets to logic low(0V)
-def setPinLow(pinNo):
-    if socket.gethostname() == 'orangepizero':
-        GPIO.output(pinNo,GPIO.LOW)
-
-def cleanupGPIO():
-    if socket.gethostname() == 'orangepizero':
-        IN1, IN2, IN3, IN4 = getMotorPins()
-        setPinLow([IN1, IN2, IN3, IN4])
-        GPIO.cleanup()
-
-def getMotorPins():
-    configParser = ConfigParser.RawConfigParser()   
-    configFilePath = r'config.txt'
-    configParser.read(configFilePath)
-    IN1 = int(configParser.get('DEVICE-INFO', 'in1'))
-    IN2 = int(configParser.get('DEVICE-INFO', 'in2'))
-    IN3 = int(configParser.get('DEVICE-INFO', 'in3'))
-    IN4 = int(configParser.get('DEVICE-INFO', 'in4'))
-    return IN1, IN2, IN3, IN4
-
-def parseData(data):
-    rawStr = data.split(",")
-    devNo = rawStr[0].split(":")[1]
-    action = rawStr[1].split(":")[1]
-    duration = rawStr[2].split(":")[1]
-    if devNo==DEVICE_NO:
-        makeAction(action.strip(), int(duration.strip()))
-
-
-def makeAction(action, duration):
-    IN1, IN2, IN3, IN4 = getMotorPins()
-    if action=="Forward":
-        setPinHigh(IN1)
-        setPinLow(IN2)
-        setPinHigh(IN3)
-        setPinLow(IN4)
-
-        time.sleep(duration)
-
-        setPinLow(IN1)
-        setPinLow(IN2)
-        setPinLow(IN3)
-        setPinLow(IN4)
-        
-    elif action=="Backward":
-        setPinLow(IN1)
-        setPinHigh(IN2)
-        setPinLow(IN3)
-        setPinHigh(IN4)
-
-        time.sleep(duration)
-
-        setPinLow(IN1)
-        setPinLow(IN2)
-        setPinLow(IN3)
-        setPinLow(IN4)
-        
-    elif action=="Left":
-        setPinLow(IN1)
-        setPinLow(IN2)
-        setPinHigh(IN3)
-        setPinLow(IN4)
-
-        time.sleep(duration)
-
-        setPinLow(IN1)
-        setPinLow(IN2)
-        setPinLow(IN3)
-        setPinLow(IN4)
-        time.sleep(duration)
-
-    elif action=="Right":
-        setPinHigh(IN1)
-        setPinLow(IN2)
-        setPinLow(IN3)
-        setPinLow(IN4)
-
-        time.sleep(duration)
-
-        setPinLow(IN1)
-        setPinLow(IN2)
-        setPinLow(IN3)
-        setPinLow(IN4)
-
-    else:
-        print("Unknown action: %s, %s" % (action,duration))
 
 
 if __name__ == "__main__":
