@@ -38,12 +38,12 @@ class PiController(Controller):
 
         self.closed = False
 
-        self.IN1 = port.PH2
-        self.IN2 = port.PI19
-        self.IN3 = port.PI18
-        self.IN4 = port.PI17
-        self.PWMPIN1 = port.PB20
-        self.PWMPIN2 = port.PI3
+        self.IN1 = port.PA1
+        self.IN2 = port.PD14
+        self.IN3 = port.PA0
+        self.IN4 = port.PA3
+        self.PWMPIN1 = port.PA6
+        self.PWMPIN2 = port.PA11
 
         gpio.init()
         gpio.setcfg(self.IN1, gpio.OUTPUT)
