@@ -38,7 +38,7 @@ class PiController(Controller):
 
         self.closed = False
 
-        self.IN1 = port.PH2
+        self.IN1 = port.PH1
         self.IN2 = port.PI19
         self.IN3 = port.PI18
         self.IN4 = port.PI17
