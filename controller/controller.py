@@ -39,9 +39,9 @@ class PiController(Controller):
         self.closed = False
 
         self.IN1 = port.PA7
-        self.IN2 = port.PA8
-        self.IN3 = port.PA9
-        self.IN4 = port.PA10
+        self.IN2 = port.PA1
+        self.IN3 = port.PA0
+        self.IN4 = port.PA3
         self.PWMPIN1 = port.PA6
         self.PWMPIN2 = port.PA11
 
