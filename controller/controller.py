@@ -27,10 +27,10 @@ class PiController(Controller):
     Running = 2
     Iterating = 3
 
-    def __init__(self, ip= '127.0.0.1', port = 5000, bsize=1024):
+    def __init__(self, ip= '127.0.0.1', port_=5000, bsize=1024):
         self.state = self.Init
         self.TCP_IP = ip    #ip
-        self.TCP_PORT = port    #port
+        self.TCP_PORT = port_    #port
         self.BUFFER_SIZE = bsize    #Buffer size
         
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
