@@ -7,7 +7,7 @@ import signal
 import sys
 
 from pyA20.gpio import gpio
-from pyA20.gpio import connector
+from pyA20.gpio import port
 from time import sleep
 from orangepwm import *
 
@@ -38,12 +38,12 @@ class PiController(Controller):
 
         self.closed = False
 
-        self.IN1 = connector.gpio3p10
-        self.IN2 = connector.gpio3p11
-        self.IN3 = connector.gpio3p13
-        self.IN4 = connector.gpio3p15
-        self.PWMPIN1 = connector.gpio3p5
-        self.PWMPIN2 = connector.gpio3p7
+        self.IN1 = port.PH2
+        self.IN2 = port.PI19
+        self.IN3 = port.PI18
+        self.IN4 = port.PI17
+        self.PWMPIN1 = port.PB20
+        self.PWMPIN2 = port.PI3
 
         gpio.init()
         gpio.setcfg(self.IN1, gpio.OUTPUT)
