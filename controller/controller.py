@@ -1,7 +1,7 @@
 import socket
-import configparser
+
 import time
-import OPi.GPIO as GPIO
+
 import os
 import signal
 import sys
