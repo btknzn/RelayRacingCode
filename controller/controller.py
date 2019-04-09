@@ -42,8 +42,8 @@ class PiController(Controller):
         self.IN2 = connector.gpio3p11
         self.IN3 = connector.gpio3p13
         self.IN4 = connector.gpio3p15
-        self.PWMPIN1 = connector.gpio3p11
-        self.PWMPIN2 = connector.gpio3p11
+        self.PWMPIN1 = connector.gpio3p5
+        self.PWMPIN2 = connector.gpio3p7
 
         gpio.init()
         gpio.setcfg(self.IN1, gpio.OUTPUT)
