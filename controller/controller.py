@@ -46,6 +46,7 @@ class PiController(Controller):
         self.PWMPIN2 = port.PA11
 
         gpio.init()
+
         gpio.setcfg(self.IN1, gpio.OUTPUT)
         gpio.setcfg(self.IN2, gpio.OUTPUT)
         gpio.setcfg(self.IN3, gpio.OUTPUT)
@@ -185,13 +186,13 @@ class PiController(Controller):
         # sleep for dt seconds
         # set the pwmLeft and 
         #TODO: Needs to be implemented
-        gpio.output(self.IN1, gpio.HIGH)
-        gpio.output(self.IN2, gpio.LOW)
-        time.sleep(self.dt)
-        gpio.output(self.IN1, gpio.LOW)
-        gpio.output(self.IN2, gpio.LOW)
-        gpio.output(self.IN3, gpio.LOW)
-        gpio.output(self.IN4, gpio.LOW)
+        gpio.output(self.IN1, 1)
+        gpio.output(self.IN2, 1)
+        #time.sleep(1)
+        #gpio.output(self.IN1, 0)
+        #gpio.output(self.IN2, 0)
+        #gpio.output(self.IN3, 0)
+        #gpio.output(self.IN4, 0)
         return
 
 
