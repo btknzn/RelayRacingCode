@@ -5,7 +5,7 @@ import sys
 sys.path.insert(0, "DifferentialDrivePathTracking/")
 sys.path.insert(0, "RouteFinding-A-Star-Algorithm-Implementation/")
 from main import State
-from route_finder import Thing
+from route_finder import Thing, Position
 import math
 
 import imutils
@@ -270,7 +270,7 @@ class Brain():
             if not(listObsx==None):
                 for i in range(len(listObsx)):
                     obstacles.append(Thing(Position(listObsx[i]),listObsy[i], 5, "Obstacle"))
-        
+            print("a1")
             robot1start = Thing(Position(x1, y1), degree1, 3, "Start")
             robot2end = Thing(Position(x2, y2), degree1, 3, "End")
             #robot2start = Thing(Position(x2, y2), degree1, 3, "Start")
