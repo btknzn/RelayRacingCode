@@ -277,6 +277,7 @@ class Brain():
             #robot3end = Thing(Position(x3, y3), degree1, 3, "End")
             #robot3start = Thing(Position(x3, y3), degree1, 3, "Start")
             #robot4end = Thing(Position(x4, y4), degree1, 3, "End")
+            path1, path2, path3, path4 = None, None, None, None
                 
             came_from, cost_so_far, last = a_star_search(obstacles, robot1start, robot2end, 3, 4, 400)
             path1 = createRoute(came_from, robot1start, last)
