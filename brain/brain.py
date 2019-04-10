@@ -5,7 +5,7 @@ import sys
 sys.path.insert(0, "DifferentialDrivePathTracking/")
 sys.path.insert(0, "RouteFinding-A-Star-Algorithm-Implementation/")
 from main import State
-from route_finder import Thing, Position
+from route_finder import Thing, Position, a_star_search
 import math
 
 import imutils
