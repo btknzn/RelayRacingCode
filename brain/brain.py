@@ -402,7 +402,10 @@ class Brain():
             self.conn3.close()
         if self.conn4:
             self.conn4.close()
-    
+
+def getCenterOfBox(box):
+    M = cv2.moments(box)
+    return (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))  
 
 def triangle(lower, upper, image, originalImage):
     cntsTriangle, filterTriangle = filterAndFindContours(lower, upper, image)
