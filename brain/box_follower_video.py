@@ -76,46 +76,57 @@ def main():
         robotImage3 = hsv.copy()
         robotImage4 = hsv.copy()
 
-        cx1, cy1, angle1, filterRobot1 = triangle(lowerRobot1, upperRobot1, robotImage1, image) 
-        if cx1:
-            lastResetCounterR1 = 0
-            if len(listR1x)==10:
-                listR1x = np.delete(listR1x, 0, 0)
-            if len(listR1y)==10:
-                listR1y = np.delete(listR1y, 0, 0)  
-            if len(listR1angle)==10:
-                listR1angle = np.delete(listR1angle, 0, 0)                    
-            listR1x = np.append(listR1x, cx1)                
-            listR1y = np.append(listR1y, cy1)            
-            listR1angle = np.append(listR1angle, angle1)
-            x1 = int(np.mean(listR1x))
-            y1 = int(np.mean(listR1y))
-            degree1 = stats.circmean(listR1angle, low = -180, high=180)
+        
 
-            cv2.circle(image, (x1, y1), 5, (0, 0, 255), -1)
-            cv2.putText(image,'angle= '+str(int(degree1)),(x1+10,y1+10), 
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
-            
-        cx2, cy2, angle2, filterRobot2 = triangle(lowerRobot2, upperRobot2, robotImage2, image) 
-        if cx2:
-            lastResetCounterR2 = 0
-            if len(listR2x)==10:
-                listR2x = np.delete(listR2x, 0, 0)
-            if len(listR2y)==10:
-                listR2y = np.delete(listR2y, 0, 0)  
-            if len(listR2angle)==10:
-                listR2angle = np.delete(listR2angle, 0, 0)                    
-            listR2x = np.append(listR2x, cx1)                
-            listR2y = np.append(listR2y, cy1)            
-            listR2angle = np.append(listR2angle, angle2)
-            x2 = int(np.mean(listR2x))
-            y2 = int(np.mean(listR2y))
-            degree2 = stats.circmean(listR2angle, high=360)
 
-            cv2.circle(image, (x2, y2), 5, (0, 0, 255), -1)
-            cv2.putText(image,'angle= '+str(int(degree2)),(x2+10,y2+10), 
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
-        #TODO missing for r3 and r4
+
+
+        cntsRobotGreen, filterGreen = filterAndFindContours(lowerRobot1, upperRobot1, robotImage1)
+        cntsRobotBlue, filterBlue = filterAndFindContours(lowerRobot2, upperRobot2, robotImage2)
+        cntsRobotYellow, filterYellow = filterAndFindContours(lowerRobot3, upperRobot3, robotImage3)
+        cntsRobotRed, filterRed = filterAndFindContours(lowerRobot4, upperRobot4, robotImage4)
+
+        cntsObstacle, filterOrange = filterAndFindContours(lowerObstacle, upperObstacle, orangeImage)
+
+        if len(cntsRobotGreen) >= 1:
+            #Sort the contours by the area and check is it big enough to be a robot
+            cntsRobotGreen.sort(key=cv2.contourArea, reverse=True)
+            #if (cv2.contourArea(cntsRobotGreen[0]) / cv2.contourArea(cntsRobotGreen[1])) < 10 and cv2.contourArea(cntsRobotGreen[0])>100:
+            if cv2.contourArea(cntsRobotGreen[0])>50:
+                x1,y1 = getCenterOfBox(cntsRobotGreen[0])
+                if len(listR1x)==10:
+                    listR1x = np.delete(listR1x, 0, 0)
+                if len(listR1y)==10:
+                    listR1y = np.delete(listR1y, 0, 0)  
+                if len(listR1angle)==10:
+                    listR1angle = np.delete(listR1angle, 0, 0)                    
+                listR1x = np.append(listR1x, cx1)                
+                listR1y = np.append(listR1y, cy1)            
+                listR1angle = np.append(listR1angle, angle1)
+                x1 = int(np.mean(listR1x))
+                y1 = int(np.mean(listR1y))
+                degree1 = stats.circmean(listR1angle, low = -180, high=180)
+
+                cv2.circle(image, (x1, y1), 5, (0, 0, 255), -1)
+                cv2.putText(image,'angle= '+str(int(degree1)),(x1+10,y1+10), 
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
+        
+        if len(cntsRobotBlue) >= 1:
+            #Sort the contours by the area and check is it big enough to be a robot
+            cntsRobotBlue.sort(key=cv2.contourArea, reverse=True)
+            #if (cv2.contourArea(cntsRobotGreen[0]) / cv2.contourArea(cntsRobotGreen[1])) < 10 and cv2.contourArea(cntsRobotGreen[0])>100:
+            if cv2.contourArea(cntsRobotBlue[0])>50:
+                x2,y2 = getCenterOfBox(cntsRobotBlue[0])
+        if len(cntsRobotRed) >= 1:
+            #Sort the contours by the area and check is it big enough to be a robot
+            cntsRobotRed.sort(key=cv2.contourArea, reverse=True)
+            if cv2.contourArea(cntsRobotRed[0])>50:
+                x3,y3 = getCenterOfBox(cntsRobotRed[0])
+        if len(cntsRobotYellow) >= 1:
+            #Sort the contours by the area and check is it big enough to be a robot
+            cntsRobotYellow.sort(key=cv2.contourArea, reverse=True)
+            if cv2.contourArea(cntsRobotYellow[0])>50:
+                x4,y4 = getCenterOfBox(cntsRobotYellow[0])
 
 
         if lastResetCounterR1>20:
@@ -133,15 +144,25 @@ def main():
             listR2y = np.array([])
             listR2angle = np.array([])
         lastResetCounterR2+=1  
-
-
-
-        cntsRobotGreen, filterGreen = filterAndFindContours(lowerRobot1, upperRobot1, robotImage1)
-        cntsRobotBlue, filterBlue = filterAndFindContours(lowerRobot2, upperRobot2, robotImage2)
-        cntsRobotYellow, filterYellow = filterAndFindContours(lowerRobot3, upperRobot3, robotImage3)
-        cntsRobotRed, filterRed = filterAndFindContours(lowerRobot4, upperRobot4, robotImage4)
-
-        cntsObstacle, filterOrange = filterAndFindContours(lowerObstacle, upperObstacle, orangeImage)
+        
+        if lastResetCounterR2>20:
+            listR3x, listR3y, listR3angle, lastResetCounterR3 = None, None, None, 0
+            
+            listR3x = np.array([])
+            listR3y = np.array([])
+            listR3angle = np.array([])
+        lastResetCounterR3+=1  
+        
+        if lastResetCounterR4>20:
+            listR4x, listR4y, listR4angle, lastResetCounterR4 = None, None, None, 0
+            
+            listR4x = np.array([])
+            listR4y = np.array([])
+            listR4angle = np.array([])
+        lastResetCounterR4+=1  
+        
+        
+        
         """
         if len(cntsRobotGreen) >= 2:
             #Sort the contours by the area and check is it big enough to be a robot
@@ -184,7 +205,7 @@ def main():
         """
         if len(cntsObstacle) >= 1:
             for i in range(len(cntsObstacle)):
-                if (cv2.contourArea(cntsObstacle[i])>50):
+                if (cv2.contourArea(cntsObstacle[i])>30):
                     x1,y1 = getCenterOfBox(cntsObstacle[i])
                     drawBox(cntsObstacle[i], image, (x1, y1))
                     cv2.putText(image,'x='+str(x1)+', y='+str(y1),(x1+10,y1+10), 
@@ -219,7 +240,7 @@ def main():
     cv2.destroyAllWindows()
 
 def filterAndFindContours(lower, upper, image, doMorph=True, doErode=True, doDilate=False):
-    mask = cv2.inRange(image, lower, upper)   
+    mask = cv2.inRange(image.copy(), lower, upper)   
 
     kernel = np.ones((5,5),np.uint8)
     if doErode:
