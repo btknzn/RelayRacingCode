@@ -68,12 +68,13 @@ class Brain():
         s4.listen(1)
         self.conn4, self.addr4 = s4.accept()
         """
-
+        frameSize = (320, 240)
         print ('Connection address1:', self.addr1)
         #print ('Connection address2:', self.addr2)
         #print ('Connection address3:', self.addr3)
         #print ('Connection address4:', self.addr4)
-        self.vs = VideoStream(src=0, usePiCamera=True).start()
+        self.vs = VideoStream(src=0, usePiCamera=True, resolution=frameSize, framerate=32).start()
+        
 
         pass
     def configure(self):
