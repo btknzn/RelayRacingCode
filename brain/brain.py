@@ -253,6 +253,7 @@ class Brain():
             #(r3x, r3y)
             #(r4x, r4y)
             #(obsx, obsy)
+            listObsx = None
             x1, y1, degree1, x2, y2, degree2, x3, y3, degree3, x4, y4, degree4, listObsx, listObsy = \
                 self.findAllRobots(5, self.lowerRobot1, self.upperRobot1, self.lowerRobot2, self.upperRobot2, self.lowerRobot3, self.upperRobot3, \
                     self.lowerRobot4, self.upperRobot4, self.lowerObstacle, self.upperObstacle)
@@ -267,7 +268,7 @@ class Brain():
                     self.findAllRobots(5, self.lowerRobot1, self.upperRobot1, self.lowerRobot2, self.upperRobot2, self.lowerRobot3, self.upperRobot3, \
                         self.lowerRobot4, self.upperRobot4, self.lowerObstacle, self.upperObstacle)
 
-            if listObsx:
+            if listObsx != None:
                 for i in range(len(listObsx)):
                     obstacles.append(Thing(Position(listObsx[i]),listObsy[i], 5, "Obstacle"))
             print("a1")
