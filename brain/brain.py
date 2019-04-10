@@ -74,7 +74,7 @@ class Brain():
         #print ('Connection address3:', self.addr3)
         #print ('Connection address4:', self.addr4)
         self.vs = VideoStream(src=0, usePiCamera=True, resolution=frameSize, framerate=32).start()
-        
+        time.sleep(2.0)
 
         pass
     def configure(self):
