@@ -47,23 +47,27 @@ class Brain():
         self.conn1, self.conn2, self.conn3, self.conn4 = None, None, None, None
 
         s1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s1.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s1.bind((self.TCP_IP, self.TCP_PORT1))
         s1.listen(1)
         self.conn1, self.addr1 = s1.accept()
 
         """
         s2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s2.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s2.bind((self.TCP_IP, self.TCP_PORT2))
         s2.listen(1)
 
         self.conn2, self.addr2 = s2.accept()
 
         s3 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s3.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s3.bind((self.TCP_IP, self.TCP_PORT3))
         s3.listen(1)
         self.conn3, self.addr3 = s3.accept()
 
         s4 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s4.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s4.bind((self.TCP_IP, self.TCP_PORT4))
         s4.listen(1)
         self.conn4, self.addr4 = s4.accept()
