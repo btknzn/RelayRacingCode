@@ -12,7 +12,7 @@ import time
 
 
 def main():
-    frameSize = (640, 480)
+    frameSize = (1920, 1080)
     vs = VideoStream(src=0, usePiCamera=True, resolution=frameSize, framerate=80).start()
     time.sleep(2.0)
     
