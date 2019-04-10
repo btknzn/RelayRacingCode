@@ -390,7 +390,15 @@ class Brain():
                 # set state to start
             # else do nothing, pass
 
-            data = self.conn.recv(self.BUFFER_SIZE)
+            if self.robotIndex == 0:
+                data = self.conn1.recv(self.BUFFER_SIZE)
+            elif self.robotIndex == 1:
+                data = self.conn2.recv(self.BUFFER_SIZE)
+            elif self.robotIndex == 2:
+                data = self.conn3.recv(self.BUFFER_SIZE)
+            elif self.robotIndex == 3:
+                data = self.conn4.recv(self.BUFFER_SIZE)
+            
             message = Message.create(data.decode())
             # TODO: Identifying the current robot location is not implemented yet
             if message.type == Message.GetLocationMessageType:
@@ -405,22 +413,22 @@ class Brain():
                     if not(x1 and y1 and degree1):
                         x1, y1, degree1 = 0, 0, 0
 
-                    self.conn.send(Message.createLocationMessage(State(x1, y1, math.radians(degree1))).__str__().encode())
+                    self.conn1.send(Message.createLocationMessage(State(x1, y1, math.radians(degree1))).__str__().encode())
 
                 elif self.robotIndex == 1:
                     if not(x2 and y2 and degree2):
                         x2, y2, degree2 = 0, 0, 0
-                    self.conn.send(Message.createLocationMessage(State(x2, y2, math.radians(degree2))).__str__().encode())
+                    self.conn2.send(Message.createLocationMessage(State(x2, y2, math.radians(degree2))).__str__().encode())
 
                 elif self.robotIndex == 2:
                     if not(x3 and y3 and degree3):
                         x3, y3, degree3 = 0, 0, 0
-                    self.conn.send(Message.createLocationMessage(State(x3, y3, math.radians(degree3))).__str__().encode())
+                    self.conn3.send(Message.createLocationMessage(State(x3, y3, math.radians(degree3))).__str__().encode())
 
                 else:
                     if not(x4 and y4 and degree4):
                         x4, y4, degree4 = 0, 0, 0
-                    self.conn.send(Message.createLocationMessage(State(x4, y4, math.radians(degree4))).__str__().encode())
+                    self.conn4.send(Message.createLocationMessage(State(x4, y4, math.radians(degree4))).__str__().encode())
 
             elif message.type == Message.EndMessageType:
                 self.robotIndex = self.robotIndex + 1
