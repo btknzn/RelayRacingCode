@@ -12,8 +12,10 @@ import time
 
 
 def main():
-    vs = VideoStream(src=0, usePiCamera=False).start()
-    time.sleep(1.0)
+    frameSize = (640, 480)
+    vs = VideoStream(src=0, usePiCamera=True, resolution=frameSize, framerate=80).start()
+    time.sleep(2.0)
+    
 
     upperRobot = (0, 0, 0)
     lowerRobot = (255, 255, 255)
