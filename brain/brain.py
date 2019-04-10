@@ -406,7 +406,7 @@ class Brain():
                 # Calculate the robot location for 20 iteration and send the average values
                 # self.robotIndex can help to identify robot color
                 x1, y1, degree1, x2, y2, degree2, x3, y3, degree3, x4, y4, degree4, listObsx, listObsy = \
-                self.findAllRobots(20, self.lowerRobot1, self.upperRobot1, self.lowerRobot2, self.upperRobot2, self.lowerRobot3, self.upperRobot3, \
+                self.findAllRobots(2, self.lowerRobot1, self.upperRobot1, self.lowerRobot2, self.upperRobot2, self.lowerRobot3, self.upperRobot3, \
                     self.lowerRobot4, self.upperRobot4, self.lowerObstacle, self.upperObstacle)
 
                 if self.robotIndex == 0:
