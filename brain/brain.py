@@ -268,7 +268,7 @@ class Brain():
                     self.findAllRobots(5, self.lowerRobot1, self.upperRobot1, self.lowerRobot2, self.upperRobot2, self.lowerRobot3, self.upperRobot3, \
                         self.lowerRobot4, self.upperRobot4, self.lowerObstacle, self.upperObstacle)
 
-            if type(listObsx) != NoneType:
+            if listObsx is None:
                 for i in range(len(listObsx)):
                     obstacles.append(Thing(Position(listObsx[i]),listObsy[i], 5, "Obstacle"))
             print("a1")
