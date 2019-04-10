@@ -204,8 +204,8 @@ class Brain():
                         cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 0, 0), 1)
             
             cv2.imshow('Robot Detector', image)
-            cv2.imshow('Robot Detector', filterGreen)
-            cv2.imshow('Robot Detector', filterOrange)
+            cv2.imshow('Robot Detector1', filterGreen)
+            cv2.imshow('Robot Detector2', filterBlue)
             if lastResetCounterR1>iteration:
                 break
 
