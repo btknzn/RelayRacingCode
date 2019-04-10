@@ -100,9 +100,9 @@ def main():
                     listR1y = np.delete(listR1y, 0, 0)  
                 if len(listR1angle)==10:
                     listR1angle = np.delete(listR1angle, 0, 0)                    
-                listR1x = np.append(listR1x, cx1)                
-                listR1y = np.append(listR1y, cy1)            
-                listR1angle = np.append(listR1angle, angle1)
+                listR1x = np.append(listR1x, x1)                
+                listR1y = np.append(listR1y, y1)            
+                listR1angle = np.append(listR1angle, 0)
                 x1 = int(np.mean(listR1x))
                 y1 = int(np.mean(listR1y))
                 degree1 = stats.circmean(listR1angle, low = -180, high=180)
