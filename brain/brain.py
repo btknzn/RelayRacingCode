@@ -280,7 +280,7 @@ class Brain():
                 
             came_from, cost_so_far, last = a_star_search(obstacles, robot1start, robot2end, 3, 4, 400)
             path1 = createRoute(came_from, robot1start, last)
-
+            print("b")
             #came_from, cost_so_far, last = a_star_search(obstacles, robot2start, robot3end, 3, 4, 200)
             #path2 = createRoute(came_from, robot1start, last)
 
@@ -297,9 +297,9 @@ class Brain():
                 start = State(path1[0][0], path1[0][1], path1[0][2])
                 targets = [State(i,j,k) for (i,j,k) in path1]
                 del targets[0]
-                self.conn.send(Message.createRouteMessage(start, targets).__str__().encode())
+                self.conn1.send(Message.createRouteMessage(start, targets).__str__().encode())
             
-                data = self.conn.recv(self.BUFFER_SIZE)
+                data = self.conn1.recv(self.BUFFER_SIZE)
                 message = Message.create(data.decode())
                 # TODO: Identifying the current robot location is not implemented yet
                 if message.type == Message.OkMessageType:
@@ -311,9 +311,9 @@ class Brain():
                 start = State(path2[0][0], path2[0][1], path2[0][2])
                 targets = [State(i,j,k) for (i,j,k) in path2]
                 del targets[0]
-                self.conn.send(Message.createRouteMessage(start, targets).__str__().encode())
+                self.conn2.send(Message.createRouteMessage(start, targets).__str__().encode())
             
-                data = self.conn.recv(self.BUFFER_SIZE)
+                data = self.conn2.recv(self.BUFFER_SIZE)
                 message = Message.create(data.decode())
                 # TODO: Identifying the current robot location is not implemented yet
                 if message.type == Message.OkMessageType:
@@ -325,9 +325,9 @@ class Brain():
                 start = State(path3[0][0], path3[0][1], path3[0][2])
                 targets = [State(i,j,k) for (i,j,k) in path3]
                 del targets[0]
-                self.conn.send(Message.createRouteMessage(start, targets).__str__().encode())
+                self.conn.send3(Message.createRouteMessage(start, targets).__str__().encode())
             
-                data = self.conn.recv(self.BUFFER_SIZE)
+                data = self.conn3.recv(self.BUFFER_SIZE)
                 message = Message.create(data.decode())
                 # TODO: Identifying the current robot location is not implemented yet
                 if message.type == Message.OkMessageType:
@@ -339,9 +339,9 @@ class Brain():
                 start = State(path4[0][0], path4[0][1], path4[0][2])
                 targets = [State(i,j,k) for (i,j,k) in path4]
                 del targets[0]
-                self.conn.send(Message.createRouteMessage(start, targets).__str__().encode())
+                self.conn4.send(Message.createRouteMessage(start, targets).__str__().encode())
             
-                data = self.conn.recv(self.BUFFER_SIZE)
+                data = self.conn4.recv(self.BUFFER_SIZE)
                 message = Message.create(data.decode())
                 # TODO: Identifying the current robot location is not implemented yet
                 if message.type == Message.OkMessageType:
