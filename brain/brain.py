@@ -254,7 +254,7 @@ class Brain():
             #(r4x, r4y)
             #(obsx, obsy)
             x1, y1, degree1, x2, y2, degree2, x3, y3, degree3, x4, y4, degree4, listObsx, listObsy = \
-                self.findAllRobots(50, self.lowerRobot1, self.upperRobot1, self.lowerRobot2, self.upperRobot2, self.lowerRobot3, self.upperRobot3, \
+                self.findAllRobots(5, self.lowerRobot1, self.upperRobot1, self.lowerRobot2, self.upperRobot2, self.lowerRobot3, self.upperRobot3, \
                     self.lowerRobot4, self.upperRobot4, self.lowerObstacle, self.upperObstacle)
             
             print(x1, y1, degree1, x2, y2, degree2, x3, y3, degree3, x4, y4, degree4, listObsx, listObsy)
@@ -264,7 +264,7 @@ class Brain():
             while x1 == None or x2 == None :
                 print("Error detecting some robots or obstacles, re localizing.")
                 x1, y1, degree1, x2, y2, degree2, x3, y3, degree3, x4, y4, degree4, listObsx, listObsy = \
-                    self.findAllRobots(50, self.lowerRobot1, self.upperRobot1, self.lowerRobot2, self.upperRobot2, self.lowerRobot3, self.upperRobot3, \
+                    self.findAllRobots(5, self.lowerRobot1, self.upperRobot1, self.lowerRobot2, self.upperRobot2, self.lowerRobot3, self.upperRobot3, \
                         self.lowerRobot4, self.upperRobot4, self.lowerObstacle, self.upperObstacle)
 
             if not(listObsx==None):
