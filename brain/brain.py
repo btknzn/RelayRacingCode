@@ -291,7 +291,7 @@ class Brain():
             #came_from, cost_so_far, last = a_star_search(obstacles, robot1start, robot2end, 3, 4, 200)
             #path4 = createRoute(came_from, robot1start, last)
             
-            print(path)
+            print(path1)
             
             if path1:
                 #image = drawGrid(box_count, size, things, path[1:-1])  
