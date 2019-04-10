@@ -229,7 +229,7 @@ class PiController(Controller):
 
 def main():
     
-    controller = PiController(ip='192.168.43.37')
+    controller = PiController(ip='192.168.43.88')
     signal.signal(signal.SIGINT, controller.signal_handler)
     while not controller.closed:
         controller.run()
