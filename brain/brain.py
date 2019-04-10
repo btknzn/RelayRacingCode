@@ -326,7 +326,7 @@ class Brain():
                 start = State(path3[0][0], path3[0][1], path3[0][2])
                 targets = [State(i,j,k) for (i,j,k) in path3]
                 del targets[0]
-                self.conn.send3(Message.createRouteMessage(start, targets).__str__().encode())
+                self.conn3.send(Message.createRouteMessage(start, targets).__str__().encode())
             
                 data = self.conn3.recv(self.BUFFER_SIZE)
                 message = Message.create(data.decode())
@@ -368,7 +368,15 @@ class Brain():
                 self.close()
             else:
                 #TODO:In sending message, later we need to implement which robot we are sending the message
-                self.conn.send(Message.createStartMessage().__str__().encode())
+                if self.robotIndex == 0:
+                    self.conn1.send(Message.createStartMessage().__str__().encode())
+                elif self.robotIndex == 1:
+                    self.conn2.send(Message.createStartMessage().__str__().encode())
+                elif self.robotIndex == 2:
+                    self.con3.send(Message.createStartMessage().__str__().encode())
+                elif self.robotIndex == 3:
+                    self.conn4.send(Message.createStartMessage().__str__().encode())
+                
                 self.state = self.Running
             
 
