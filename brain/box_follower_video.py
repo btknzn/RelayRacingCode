@@ -122,38 +122,15 @@ def main():
                 cv2.putText(image,'x= '+str(x4)+', y= '+str(y4),(x4+10,y4+10), 
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
 
-
-        if lastResetCounterR1>20:
-            listR1x, listR1y, listR1angle, lastResetCounterR1 = None, None, None, 0
-            
-            listR1x = np.array([])
-            listR1y = np.array([])
-            listR1angle = np.array([])
-        lastResetCounterR1+=1  
-
-        if lastResetCounterR2>20:
-            listR2x, listR2y, listR2angle, lastResetCounterR2 = None, None, None, 0
-            
-            listR2x = np.array([])
-            listR2y = np.array([])
-            listR2angle = np.array([])
-        lastResetCounterR2+=1  
+        if len(cntsObstacle) >= 1:
+            for i in range(len(cntsObstacle)):
+                if (cv2.contourArea(cntsObstacle[i])>30):
+                    x1,y1 = getCenterOfBox(cntsObstacle[i])
+                    drawBox(cntsObstacle[i], image, (x1, y1))
+                    cv2.putText(image,'x='+str(x1)+', y='+str(y1),(x1+10,y1+10), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 0, 0), 1)
+                    obsLastBox = cntsObstacle[i]
         
-        if lastResetCounterR2>20:
-            listR3x, listR3y, listR3angle, lastResetCounterR3 = None, None, None, 0
-            
-            listR3x = np.array([])
-            listR3y = np.array([])
-            listR3angle = np.array([])
-        lastResetCounterR3+=1  
-        
-        if lastResetCounterR4>20:
-            listR4x, listR4y, listR4angle, lastResetCounterR4 = None, None, None, 0
-            
-            listR4x = np.array([])
-            listR4y = np.array([])
-            listR4angle = np.array([])
-        lastResetCounterR4+=1  
         
         
         
@@ -197,14 +174,6 @@ def main():
                     #right box is bigger than the left box, so its facing the left side
                     lastdirection = False
         """
-        if len(cntsObstacle) >= 1:
-            for i in range(len(cntsObstacle)):
-                if (cv2.contourArea(cntsObstacle[i])>30):
-                    x1,y1 = getCenterOfBox(cntsObstacle[i])
-                    drawBox(cntsObstacle[i], image, (x1, y1))
-                    cv2.putText(image,'x='+str(x1)+', y='+str(y1),(x1+10,y1+10), 
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 0, 0), 1)
-                    obsLastBox = cntsObstacle[i]
         
         
         
