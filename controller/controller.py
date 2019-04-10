@@ -177,8 +177,8 @@ class PiController(Controller):
 
     def makeAction(self, v, w):
 
-        vr, vl = self.normalize(v,w)
-
+        #vr, vl = self.normalize(v,w)
+        vr, vl = self.uniToDiff(v,w)
         # Motor code to 
         #print(nvr, nvl)
 
@@ -187,8 +187,44 @@ class PiController(Controller):
         # set the pwmLeft and 
         #TODO: Needs to be implemented
         print(vr, vl)
+        if (vr - vl)>0.5:
+            #left turn
+            gpio.output(self.IN1, gpio.HIGH)
+            gpio.output(self.IN2, gpio.LOW)
+            pwn=self.calculatePwnValue(vr)
+            self.pwm1.changeDutyCycle(pwn) 
 
+            gpio.output(self.IN3, gpio.LOW)
+            gpio.output(self.IN4, gpio.HIGH)
+            pwn=self.calculatePwnValue(vl)
+            self.pwm2.changeDutyCycle(pwn)
 
+        elif (vl- vr)>0.5:
+            #right turn
+            gpio.output(self.IN1, gpio.LOW)
+            gpio.output(self.IN2, gpio.HIGH)
+            pwn=self.calculatePwnValue(vr)
+            self.pwm1.changeDutyCycle(pwn)
+
+            gpio.output(self.IN3, gpio.HIGH)
+            gpio.output(self.IN4, gpio.LOW)
+            pwn=self.calculatePwnValue(vl)
+            self.pwm2.changeDutyCycle(pwn)
+            
+        elif vl>0 and vr>0:
+            #forward
+
+            gpio.output(self.IN1, gpio.HIGH)
+            gpio.output(self.IN2, gpio.LOW)
+            pwn=self.calculatePwnValue(vr)
+            self.pwm1.changeDutyCycle(pwn) 
+
+            gpio.output(self.IN3, gpio.HIGH)
+            gpio.output(self.IN4, gpio.LOW)
+            pwn=self.calculatePwnValue(vl)
+            self.pwm2.changeDutyCycle(pwn) 
+
+        """
         if (vr >= 0):
             gpio.output(self.IN1, gpio.HIGH)
             gpio.output(self.IN2, gpio.LOW)
@@ -209,6 +245,8 @@ class PiController(Controller):
             gpio.output(self.IN4, gpio.HIGH)
             pwn=self.calculatePwnValue(vl)
             self.pwm2.changeDutyCycle(pwn)
+        """
+
         time.sleep(self.dt)
         gpio.output(self.IN1, gpio.LOW)
         gpio.output(self.IN2, gpio.LOW)

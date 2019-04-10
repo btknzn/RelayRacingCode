@@ -12,7 +12,7 @@ import time
 
 
 def main():
-    frameSize = (1400, 800)
+    frameSize = (640, 480)
     vs = VideoStream(src=0, usePiCamera=True, resolution=frameSize, framerate=80).start()
     time.sleep(2.0)
     
@@ -91,42 +91,36 @@ def main():
         if len(cntsRobotGreen) >= 1:
             #Sort the contours by the area and check is it big enough to be a robot
             cntsRobotGreen.sort(key=cv2.contourArea, reverse=True)
-            #if (cv2.contourArea(cntsRobotGreen[0]) / cv2.contourArea(cntsRobotGreen[1])) < 10 and cv2.contourArea(cntsRobotGreen[0])>100:
             if cv2.contourArea(cntsRobotGreen[0])>50:
                 x1,y1 = getCenterOfBox(cntsRobotGreen[0])
-                if len(listR1x)==10:
-                    listR1x = np.delete(listR1x, 0, 0)
-                if len(listR1y)==10:
-                    listR1y = np.delete(listR1y, 0, 0)  
-                if len(listR1angle)==10:
-                    listR1angle = np.delete(listR1angle, 0, 0)                    
-                listR1x = np.append(listR1x, x1)                
-                listR1y = np.append(listR1y, y1)            
-                listR1angle = np.append(listR1angle, 0)
-                x1 = int(np.mean(listR1x))
-                y1 = int(np.mean(listR1y))
-                degree1 = stats.circmean(listR1angle, low = -180, high=180)
-
                 cv2.circle(image, (x1, y1), 5, (0, 0, 255), -1)
-                cv2.putText(image,'angle= '+str(int(degree1)),(x1+10,y1+10), 
+                cv2.putText(image,'x= '+str(x1)+', y= '+str(y1),(x1+10,y1+10), 
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
         
         if len(cntsRobotBlue) >= 1:
             #Sort the contours by the area and check is it big enough to be a robot
             cntsRobotBlue.sort(key=cv2.contourArea, reverse=True)
-            #if (cv2.contourArea(cntsRobotGreen[0]) / cv2.contourArea(cntsRobotGreen[1])) < 10 and cv2.contourArea(cntsRobotGreen[0])>100:
             if cv2.contourArea(cntsRobotBlue[0])>50:
                 x2,y2 = getCenterOfBox(cntsRobotBlue[0])
+                cv2.circle(image, (x2, y2), 5, (0, 0, 255), -1)
+                cv2.putText(image,'x= '+str(x2)+', y= '+str(y2),(x2+10,y2+10), 
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
         if len(cntsRobotRed) >= 1:
             #Sort the contours by the area and check is it big enough to be a robot
             cntsRobotRed.sort(key=cv2.contourArea, reverse=True)
             if cv2.contourArea(cntsRobotRed[0])>50:
                 x3,y3 = getCenterOfBox(cntsRobotRed[0])
+                cv2.circle(image, (x3, y3), 5, (0, 0, 255), -1)
+                cv2.putText(image,'x= '+str(x3)+', y= '+str(y3),(x3+10,y3+10), 
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
         if len(cntsRobotYellow) >= 1:
             #Sort the contours by the area and check is it big enough to be a robot
             cntsRobotYellow.sort(key=cv2.contourArea, reverse=True)
             if cv2.contourArea(cntsRobotYellow[0])>50:
                 x4,y4 = getCenterOfBox(cntsRobotYellow[0])
+                cv2.circle(image, (x4, y4), 5, (0, 0, 255), -1)
+                cv2.putText(image,'x= '+str(x4)+', y= '+str(y4),(x4+10,y4+10), 
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
 
 
         if lastResetCounterR1>20:
