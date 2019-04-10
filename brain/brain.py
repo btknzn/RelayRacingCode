@@ -3,7 +3,9 @@ import socket
 from message import Message
 import sys
 sys.path.insert(0, "DifferentialDrivePathTracking/")
+sys.path.insert(0, "RouteFinding-A-Star-Algorithm-Implementation/")
 from main import State
+from route_finder import Thing
 import math
 
 import imutils
