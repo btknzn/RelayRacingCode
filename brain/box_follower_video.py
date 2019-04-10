@@ -231,8 +231,8 @@ def main():
         
         #newImg=cv2.bitwise_or(mask, maskObstacle)
         cv2.imshow('Robot Detector: Press a to configure filters1', image)
-        #cv2.imshow('Robot Detector: Press a to configure filters2', filterGreen)
-        cv2.imshow('Robot Detector: Press a to configure filters3', filterRobot1)
+        cv2.imshow('Robot Detector: Press a to configure filters2', filterOrange)
+        cv2.imshow('Robot Detector: Press a to configure filters3', filterGreen)
         #cv2.imshow('Robot Detector: Press a to configure filters4', redImage)
 
     
