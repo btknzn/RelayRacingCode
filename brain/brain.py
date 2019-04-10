@@ -72,12 +72,12 @@ class Brain():
         s4.listen(1)
         self.conn4, self.addr4 = s4.accept()
         """
-        frameSize = (800, 608)
+        frameSize = (640, 480)
         print ('Connection address1:', self.addr1)
         #print ('Connection address2:', self.addr2)
         #print ('Connection address3:', self.addr3)
         #print ('Connection address4:', self.addr4)
-        self.vs = VideoStream(src=0, usePiCamera=True, resolution=frameSize).start()
+        self.vs = VideoStream(src=0, usePiCamera=True, resolution=frameSize, framerate=80).start()
         time.sleep(2.0)
 
         pass
@@ -566,8 +566,8 @@ def findRanges(image):
         tmpS=tmpS/(count)
         tmpV=tmpV/(count)
 
-    return (max(0, lowH-5), max(0, lowS-15), max(0, lowV-25)), \
-        (min(255, highH+5), min(255, highS+15), min(255, highV+25)), \
+    return (max(0, lowH-10), max(0, lowS-25), max(0, lowV-30)), \
+        (min(255, highH+10), min(255, highS+25), min(255, highV+30)), \
         (max(0, tmpH-10), max(0, tmpS-10), max(0, tmpV-20)), \
         (min(255, tmpH+10), min(255, tmpS+10), min(255, tmpV+20))
 
