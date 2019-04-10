@@ -14,10 +14,15 @@ from imutils.video import VideoStream
 from imutils.contours import sort_contours
 import time
 
+import signal
+
 
 
 def main():
+
+    
     brain = Brain()
+    signal.signal(signal.SIGINT, brain.signal_handler)
     while not brain.closed:
         brain.run()
 
@@ -27,25 +32,48 @@ class Brain():
     Start = 1
     Running = 2
 
-    def __init__(self, ip= '10.42.0.1', port = 5000, bsize=1024, totalRobotCount_=4):
+    def __init__(self, ip= '192.168.43.88', bsize=1024, totalRobotCount_=4):
         self.state = self.Init
         self.TCP_IP = ip    #ip
-        self.TCP_PORT = port    #port
+        self.TCP_PORT1 = 5000    #port
+        self.TCP_PORT2 = 5001    #port
+        self.TCP_PORT3 = 5002    #port
+        self.TCP_PORT4 = 5003    #port
         self.BUFFER_SIZE = bsize    #Buffer size
 
         
         self.totalRobotCount= totalRobotCount_
         self.closed = False
+        self.conn1, self.conn2, self.conn3, self.conn4 = None, None, None, None
 
+        s1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s1.bind((self.TCP_IP, self.TCP_PORT1))
+        s1.listen(1)
+        self.conn1, self.addr1 = s1.accept()
 
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind((self.TCP_IP, self.TCP_PORT))
-        s.listen(1)
+        """
+        s2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s2.bind((self.TCP_IP, self.TCP_PORT2))
+        s2.listen(1)
 
-        self.conn, self.addr = s.accept()
+        self.conn2, self.addr2 = s2.accept()
 
-        print ('Connection address:', self.addr)
-        self.vs = VideoStream(src=0, usePiCamera=False).start()
+        s3 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s3.bind((self.TCP_IP, self.TCP_PORT3))
+        s3.listen(1)
+        self.conn3, self.addr3 = s3.accept()
+
+        s4 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s4.bind((self.TCP_IP, self.TCP_PORT4))
+        s4.listen(1)
+        self.conn4, self.addr4 = s4.accept()
+        """
+
+        print ('Connection address1:', self.addr1)
+        #print ('Connection address2:', self.addr2)
+        #print ('Connection address3:', self.addr3)
+        #print ('Connection address4:', self.addr4)
+        self.vs = VideoStream(src=0, usePiCamera=True).start()
 
         pass
     def configure(self):
@@ -139,8 +167,6 @@ class Brain():
                         x1,y1 = getCenterOfBox(cntsObstacle[i])
                         listObsx = np.append(listObsx, x1) 
                         listObsy = np.append(listObsy, y1) 
-
-
             if lastResetCounterR1>iteration:
                 break
             lastResetCounterR1+=1
@@ -192,22 +218,103 @@ class Brain():
                     self.lowerRobot4, self.upperRobot4, self.lowerObstacle, self.upperObstacle)
             
             print(x1, y1, degree1, x2, y2, degree2, x3, y3, degree3, x4, y4, degree4, listObsx, listObsy)
+            obstacles = []
+            
+            #while x1 == None or x2 == None or x3==None or x4 == None or listObsx == None:
+            while x1 == None or x2 == None :
+                print("Error detecting some robots or obstacles, re localizing.")
+                x1, y1, degree1, x2, y2, degree2, x3, y3, degree3, x4, y4, degree4, listObsx, listObsy = \
+                    self.findAllRobots(50, self.lowerRobot1, self.upperRobot1, self.lowerRobot2, self.upperRobot2, self.lowerRobot3, self.upperRobot3, \
+                        self.lowerRobot4, self.upperRobot4, self.lowerObstacle, self.upperObstacle)
 
+            if listObsx!=None:
+                for i in range(len(listObsx)):
+                    obstacles.append(Thing(Position(listObsx[i]),listObsy[i], 5, "Obstacle"))
+        
+            robot1start = Thing(Position(x1, y1), degree1, 3, "Start")
+            robot2end = Thing(Position(x2, y2), degree1, 3, "End")
+            #robot2start = Thing(Position(x2, y2), degree1, 3, "Start")
+            #robot3end = Thing(Position(x3, y3), degree1, 3, "End")
+            #robot3start = Thing(Position(x3, y3), degree1, 3, "Start")
+            #robot4end = Thing(Position(x4, y4), degree1, 3, "End")
+                
+            came_from, cost_so_far, last = a_star_search(obstacles, robot1start, robot2end, 3, 4, 400)
+            path1 = createRoute(came_from, robot1start, last)
+
+            #came_from, cost_so_far, last = a_star_search(obstacles, robot2start, robot3end, 3, 4, 200)
+            #path2 = createRoute(came_from, robot1start, last)
+
+            #came_from, cost_so_far, last = a_star_search(obstacles, robot3start, robot4end, 3, 4, 200)
+            #path3 = createRoute(came_from, robot1start, last)
+
+            #came_from, cost_so_far, last = a_star_search(obstacles, robot1start, robot2end, 3, 4, 200)
+            #path4 = createRoute(came_from, robot1start, last)
+            
+            #print(path)
+            
+            if path1:
+                #image = drawGrid(box_count, size, things, path[1:-1])  
+                start = State(path1[0][0], path1[0][1], path1[0][2])
+                targets = [State(i,j,k) for (i,j,k) in path1]
+                del targets[0]
+                self.conn.send(Message.createRouteMessage(start, targets).__str__().encode())
+            
+                data = self.conn.recv(self.BUFFER_SIZE)
+                message = Message.create(data.decode())
+                # TODO: Identifying the current robot location is not implemented yet
+                if message.type == Message.OkMessageType:
+                    self.robotIndex = 0
+                    self.state = self.Start
+            
+            if path2:
+                #image = drawGrid(box_count, size, things, path[1:-1])  
+                start = State(path2[0][0], path2[0][1], path2[0][2])
+                targets = [State(i,j,k) for (i,j,k) in path2]
+                del targets[0]
+                self.conn.send(Message.createRouteMessage(start, targets).__str__().encode())
+            
+                data = self.conn.recv(self.BUFFER_SIZE)
+                message = Message.create(data.decode())
+                # TODO: Identifying the current robot location is not implemented yet
+                if message.type == Message.OkMessageType:
+                    self.robotIndex = 0
+                    self.state = self.Start
+            
+            if path3:
+                #image = drawGrid(box_count, size, things, path[1:-1])  
+                start = State(path3[0][0], path3[0][1], path3[0][2])
+                targets = [State(i,j,k) for (i,j,k) in path3]
+                del targets[0]
+                self.conn.send(Message.createRouteMessage(start, targets).__str__().encode())
+            
+                data = self.conn.recv(self.BUFFER_SIZE)
+                message = Message.create(data.decode())
+                # TODO: Identifying the current robot location is not implemented yet
+                if message.type == Message.OkMessageType:
+                    self.robotIndex = 0
+                    self.state = self.Start
+            
+            if path4:
+                #image = drawGrid(box_count, size, things, path[1:-1])  
+                start = State(path4[0][0], path4[0][1], path4[0][2])
+                targets = [State(i,j,k) for (i,j,k) in path4]
+                del targets[0]
+                self.conn.send(Message.createRouteMessage(start, targets).__str__().encode())
+            
+                data = self.conn.recv(self.BUFFER_SIZE)
+                message = Message.create(data.decode())
+                # TODO: Identifying the current robot location is not implemented yet
+                if message.type == Message.OkMessageType:
+                    self.robotIndex = 0
+                    self.state = self.Start
+                
             # after that, send these information to route calculator.
             #start, targets = routeCalculator(r1x, r1y, r2x, r2y, r3x, r3y, r4x, r4y, obsx, obsy)
 
             #TODO: these start and target values will be calculated in route calculator.
-            start = State(-20.0, 15.0, math.radians(90))
-            targets = [State(-20.0, 16.0, 0.0)]
+            #start = State(-20.0, 15.0, math.radians(90))
+            #targets = [State(-20.0, 16.0, 0.0)]
 
-            self.conn.send(Message.createRouteMessage(start, targets).__str__().encode())
-            
-            data = self.conn.recv(self.BUFFER_SIZE)
-            message = Message.create(data.decode())
-            # TODO: Identifying the current robot location is not implemented yet
-            if message.type == Message.OkMessageType:
-                self.robotIndex = 0
-                self.state = self.Start
 
         elif self.state == self.Start:
             # If current robot index is over than number of robots:
@@ -276,11 +383,20 @@ class Brain():
         else:
             pass
 
-        
+    def signal_handler(self, sig, frame):
+        self.close()
+        sys.exit(0)
 
     def close(self):
         self.closed = True
-        self.conn.close()
+        if self.conn1:
+            self.conn1.close()
+        if self.conn2:
+            self.conn2.close()
+        if self.conn3:
+            self.conn3.close()
+        if self.conn4:
+            self.conn4.close()
     
 
 def triangle(lower, upper, image, originalImage):
