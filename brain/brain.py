@@ -127,8 +127,10 @@ class Brain():
         listR4angle = np.array([])
 
         x1,y1,degree1, x2,y2,degree2, x3,y3,degree3, x4,y4,degree4 = None, None, None, None, None, None, None, None, None, None, None, None
-        listObsx, listObsy = None, None
-
+        
+        listObsx = np.array([])
+        listObsy = np.array([])
+        
         while True:
             image = self.vs.read()
             blurred2 = cv2.GaussianBlur(image.copy(), (25, 25), 0)
@@ -273,6 +275,9 @@ class Brain():
             
             print(x1, y1, degree1, x2, y2, degree2, x3, y3, degree3, x4, y4, degree4, listObsx, listObsy)
             obstacles = []
+            
+            
+
             
             #while x1 == None or x2 == None or x3==None or x4 == None or listObsx == None:
             while x1 == None or x2 == None :
