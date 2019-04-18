@@ -211,6 +211,7 @@ class Brain():
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
 
             if len(cntsObstacle) >= 1:
+                
                 listObsx = np.array([])
                 listObsy = np.array([])
                 for i in range(len(cntsObstacle)):
@@ -278,25 +279,21 @@ class Brain():
                 self.findAllRobots(5, self.lowerRobot1, self.upperRobot1, self.lowerRobot2, self.upperRobot2, self.lowerRobot3, self.upperRobot3, \
                     self.lowerRobot4, self.upperRobot4, self.lowerObstacle, self.upperObstacle)
             
-            print(x1, y1, degree1, x2, y2, degree2, x3, y3, degree3, x4, y4, degree4, listObsx, listObsy)
-            obstacles = []
-            
+            print("First detection:",x1, y1, degree1, x2, y2, degree2, x3, y3, degree3, x4, y4, degree4, listObsx, listObsy)
             
 
             
             #while x1 == None or x2 == None or x3==None or x4 == None or listObsx == None:
-            while x1 == None or x2 == None :
+            while x1 == None or x2 == None or len(listObsx)==0:
                 print("Error detecting some robots or obstacles, re localizing.")
                 x1, y1, degree1, x2, y2, degree2, x3, y3, degree3, x4, y4, degree4, listObsx, listObsy = \
                     self.findAllRobots(5, self.lowerRobot1, self.upperRobot1, self.lowerRobot2, self.upperRobot2, self.lowerRobot3, self.upperRobot3, \
                         self.lowerRobot4, self.upperRobot4, self.lowerObstacle, self.upperObstacle)
 
-            if listObsx is None:
-                for i in range(len(listObsx)):
-                    obstacles.append(Thing(Position(listObsx[i]),listObsy[i], 5, "Obstacle"))
-            print("a1")
+            
+            print("Detected robots")
             robot1start = Thing(Position(x1, y1), degree1, 3, "Start")
-            robot2end = Thing(Position(x2, y2), degree1, 3, "End")
+            robot2end = Thing(Position(x2, y2), degree2, 3, "End")
             #robot2start = Thing(Position(x2, y2), degree1, 3, "Start")
             #robot3end = Thing(Position(x3, y3), degree1, 3, "End")
             #robot3start = Thing(Position(x3, y3), degree1, 3, "Start")
@@ -305,23 +302,22 @@ class Brain():
                 
             #came_from, cost_so_far, last = a_star_search(obstacles, robot1start, robot2end, 1, 1, 600)
             #path1 = createRoute(came_from, robot1start, last)
-            print("b")
+            
             # sx1,sy1 start x,y
             # gx1, gy1 goal x,y
             # ox, oy obstacles x,y
             # grid size
-
-            ox = [i.x for i in obstacles]
-            oy = [i.y for i in obstacles]
-
+            
+            
             grid_size = 0.5  # potential grid size [m]
             robot_radius = 5.0  # robot radius [m]
-            print(robot1start.x, robot1start.y, robot2end.x,robot2end.y, ox, oy, grid_size, robot_radius)
             rx1, ry1 = potential_field_planning(
-                robot1start.x, robot1start.y, robot2end.x,robot2end.y, ox, oy, grid_size, robot_radius)
+                robot1start.x, robot1start.y, robot2end.x,robot2end.y, listObsx, listObsy, grid_size, robot_radius)
             #came_from, cost_so_far, last = a_star_search(obstacles, robot2start, robot3end, 3, 4, 200)
             #path2 = createRoute(came_from, robot1start, last)
+            print("Calculated path planning")
 
+            
             #came_from, cost_so_far, last = a_star_search(obstacles, robot3start, robot4end, 3, 4, 200)
             #path3 = createRoute(came_from, robot1start, last)
 
