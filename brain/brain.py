@@ -134,8 +134,7 @@ class Brain():
         
         while True:
 
-            listObsx = np.array([])
-            listObsy = np.array([])
+            
             image = self.vs.read()
             blurred2 = cv2.GaussianBlur(image.copy(), (25, 25), 0)
             blurred = cv2.blur(image.copy(),(25,25))
@@ -212,6 +211,8 @@ class Brain():
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
 
             if len(cntsObstacle) >= 1:
+                listObsx = np.array([])
+                listObsy = np.array([])
                 for i in range(len(cntsObstacle)):
                     if (cv2.contourArea(cntsObstacle[i])>30):
                         xo,yo = getCenterOfBox(cntsObstacle[i])
