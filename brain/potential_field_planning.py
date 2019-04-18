@@ -14,7 +14,7 @@ import numpy as np
 # Parameters
 KP = 5.0  # attractive potential gain
 ETA = 200.0  # repulsive potential gain
-AREA_WIDTH = 30.0  # potential area width [m]
+AREA_WIDTH = 1000.0  # potential area width [m]
 
 show_animation = False
 
@@ -136,7 +136,7 @@ def main():
     print("potential_field_planning start")
 
     
-    grid_size = 0.5  # potential grid size [m]
+    grid_size = 5.0  # potential grid size [m]
     robot_radius = 5.0  # robot radius [m]
 
     ox = [15.0, 5.0, 20.0, 25.0]  # obstacle x position list [m]
@@ -153,6 +153,9 @@ def main():
     sx2, sy2, gx2, gy2 = 80.0, 30.0, 80.0, 50.0
     sx3, sy3, gx3, gy3 = 80.0, 50.0, 60.0, 80.0
     sx4, sy4, gx4, gy4 = 60.0, 80.0, 40.0, 80.0
+
+    sx1, sy1, gx1, gy1 = 382, 436, 472, 465
+    ox, oy = [393], [346]
     
 
 
