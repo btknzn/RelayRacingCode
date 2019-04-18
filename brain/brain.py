@@ -307,6 +307,9 @@ class Brain():
             # ox, oy obstacles x,y
             # grid size
 
+            ox = [i.x for i in obstacles]
+            oy = [i.y for i in obstacles]
+
             grid_size = 0.5  # potential grid size [m]
             robot_radius = 5.0  # robot radius [m]
             rx1, ry1 = potential_field_planning(
