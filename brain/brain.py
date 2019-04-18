@@ -182,7 +182,7 @@ class Brain():
                     listR2angle = np.append(listR2angle, angle2)
 
                     cv2.circle(image, (x2, y2), 5, (0, 0, 255), -1)
-                    cv2.putText(image,'x= '+str(x2)+', y= '+str(y2)+', a1= '+str(int(angle2)),(x1+10,y1+10), 
+                    cv2.putText(image,'x= '+str(x2)+', y= '+str(y2)+', a1= '+str(int(angle2)),(x2+10,y2+10), 
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
             if len(cntsRobotRed) >= 1:
                 #Sort the contours by the area and check is it big enough to be a robot
@@ -195,7 +195,7 @@ class Brain():
                     listR3angle = np.append(listR3angle, angle3)
 
                     cv2.circle(image, (x3, y3), 5, (0, 0, 255), -1)
-                    cv2.putText(image,'x= '+str(x3)+', y= '+str(y3)+', a1= '+str(int(angle3)),(x1+10,y1+10), 
+                    cv2.putText(image,'x= '+str(x3)+', y= '+str(y3)+', a1= '+str(int(angle3)),(x3+10,y3+10), 
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
             if len(cntsRobotYellow) >= 1:
                 #Sort the contours by the area and check is it big enough to be a robot
@@ -208,7 +208,7 @@ class Brain():
                     listR4angle = np.append(listR4angle, angle4)
 
                     cv2.circle(image, (x4, y4), 5, (0, 0, 255), -1)
-                    cv2.putText(image,'x= '+str(x4)+', y= '+str(y4)+', a1= '+str(int(angle4)),(x1+10,y1+10), 
+                    cv2.putText(image,'x= '+str(x4)+', y= '+str(y4)+', a1= '+str(int(angle4)),(x4+10,y4+10), 
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
 
             if len(cntsObstacle) >= 1:
