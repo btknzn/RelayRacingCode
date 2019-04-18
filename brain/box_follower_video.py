@@ -341,7 +341,7 @@ def configureColorRange(image, hsvImage):
     print(robot1Low, robot1High, robot1AvgL, robot1AvgH)
     #print((robot1Low, robot1High), (robot2Low, robot2High), (robot3Low, robot3High), (robot4Low, robot4High), (obstacleLow, obstacleHigh))
     #return robotLow, robotHigh, obstacleLow, obstacleHigh
-    return (robot1AvgL, robot1AvgH), (robot2Low, robot2High), (robot3Low, robot3High), (robot4Low, robot4High), (obstacleLow, obstacleHigh)
+    return (robot1Low, robot1High), (robot2Low, robot2High), (robot3Low, robot3High), (robot4Low, robot4High), (obstacleLow, obstacleHigh)
     #return robotAvgL, robotAvgH, obstacleAvgL, obstacleAvgH
     
 def findRanges(image):
@@ -381,8 +381,8 @@ def findRanges(image):
         tmpS=tmpS/(count)
         tmpV=tmpV/(count)
 
-    return (max(0, lowH-10), max(0, lowS-20), max(0, lowV-20)), \
-        (min(255, highH+10), min(255, highS+20), min(255, highV+20)), \
+    return (max(0, lowH-10), max(0, lowS-15), max(0, lowV-15)), \
+        (min(255, highH+10), min(255, highS+15), min(255, highV+15)), \
         (max(0, tmpH-20), max(100, tmpS-50), max(50, tmpV-60)), \
         (min(255, tmpH+20), min(255, tmpS+50), min(255, tmpV+60))
 
