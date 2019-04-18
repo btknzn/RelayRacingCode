@@ -10,7 +10,6 @@ https://www.cs.cmu.edu/~motionplanning/lecture/Chap4-Potential-Field_howie.pdf
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
 
 # Parameters
 KP = 5.0  # attractive potential gain
@@ -98,8 +97,6 @@ def potential_field_planning(sx, sy, gx, gy, ox, oy, reso, rr):
 
     if show_animation:
         draw_heatmap(pmap)
-        plt.plot(ix, iy, "*k")
-        plt.plot(gix, giy, "*m")
 
     rx, ry = [sx], [sy]
     motion = get_motion_model()
@@ -125,9 +122,6 @@ def potential_field_planning(sx, sy, gx, gy, ox, oy, reso, rr):
         rx.append(xp)
         ry.append(yp)
 
-        if show_animation:
-            plt.plot(ix, iy, ".r")
-            plt.pause(0.01)
 
     print("Goal!!")
 
@@ -136,7 +130,6 @@ def potential_field_planning(sx, sy, gx, gy, ox, oy, reso, rr):
 
 def draw_heatmap(data):
     data = np.array(data).T
-    plt.pcolor(data, vmax=100.0, cmap=plt.cm.Blues)
 
 
 def main():
@@ -162,9 +155,6 @@ def main():
     sx4, sy4, gx4, gy4 = 60.0, 80.0, 40.0, 80.0
     
 
-    if show_animation:
-        plt.grid(True)
-        plt.axis("equal")
 
     # path generation
     rx1, ry1 = potential_field_planning(
@@ -180,10 +170,6 @@ def main():
     rx4, ry4 = potential_field_planning(
         sx4, sy4, gx4, gy4, ox, oy, grid_size, robot_radius)
 
-
-
-    if show_animation:
-        plt.show()
 
 
 if __name__ == '__main__':
