@@ -155,43 +155,55 @@ class Brain():
                 #Sort the contours by the area and check is it big enough to be a robot
                 cntsRobotGreen.sort(key=cv2.contourArea, reverse=True)
                 if cv2.contourArea(cntsRobotGreen[0])>50:
+                    (x,y),(MA,ma),angle1 = cv2.fitEllipse(cntsRobotGreen[0])
                     x1,y1 = getCenterOfBox(cntsRobotGreen[0])
                     listR1x = np.append(listR1x, x1)                
                     listR1y = np.append(listR1y, y1)
+                    listR1angle = np.append(listR1angle, angle1)
+
                     cv2.circle(image, (x1, y1), 5, (0, 0, 255), -1)
-                    cv2.putText(image,'x= '+str(x1)+', y= '+str(y1),(x1+10,y1+10), 
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
+                    cv2.putText(image,'x= '+str(x1)+', y= '+str(y1)+', a1= '+str(int(angle1)),(x1+10,y1+10), 
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
             
             if len(cntsRobotBlue) >= 1:
                 #Sort the contours by the area and check is it big enough to be a robot
                 cntsRobotBlue.sort(key=cv2.contourArea, reverse=True)
                 if cv2.contourArea(cntsRobotBlue[0])>50:
+                    (x,y),(MA,ma),angle2 = cv2.fitEllipse(cntsRobotGreen[0])
                     x2,y2 = getCenterOfBox(cntsRobotBlue[0])
                     listR2x = np.append(listR2x, x2)                
                     listR2y = np.append(listR2y, y2)
+                    listR2angle = np.append(listR2angle, angle2)
+
                     cv2.circle(image, (x2, y2), 5, (0, 0, 255), -1)
-                    cv2.putText(image,'x= '+str(x2)+', y= '+str(y2),(x2+10,y2+10), 
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
+                    cv2.putText(image,'x= '+str(x2)+', y= '+str(y2)+', a1= '+str(int(angle2)),(x1+10,y1+10), 
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
             if len(cntsRobotRed) >= 1:
                 #Sort the contours by the area and check is it big enough to be a robot
                 cntsRobotRed.sort(key=cv2.contourArea, reverse=True)
                 if cv2.contourArea(cntsRobotRed[0])>50:
+                    (x,y),(MA,ma),angle3 = cv2.fitEllipse(cntsRobotGreen[0])
                     x3,y3 = getCenterOfBox(cntsRobotRed[0])
                     listR3x = np.append(listR3x, x3)                
                     listR3y = np.append(listR3y, y3)
+                    listR3angle = np.append(listR3angle, angle3)
+
                     cv2.circle(image, (x3, y3), 5, (0, 0, 255), -1)
-                    cv2.putText(image,'x= '+str(x3)+', y= '+str(y3),(x3+10,y3+10), 
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
+                    cv2.putText(image,'x= '+str(x3)+', y= '+str(y3)+', a1= '+str(int(angle3)),(x1+10,y1+10), 
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
             if len(cntsRobotYellow) >= 1:
                 #Sort the contours by the area and check is it big enough to be a robot
                 cntsRobotYellow.sort(key=cv2.contourArea, reverse=True)
                 if cv2.contourArea(cntsRobotYellow[0])>50:
+                    (x,y),(MA,ma),angle4 = cv2.fitEllipse(cntsRobotGreen[0])
                     x4,y4 = getCenterOfBox(cntsRobotYellow[0])
                     listR4x = np.append(listR3x, x4)                
                     listR4y = np.append(listR3y, y4)
+                    listR4angle = np.append(listR4angle, angle4)
+
                     cv2.circle(image, (x4, y4), 5, (0, 0, 255), -1)
-                    cv2.putText(image,'x= '+str(x4)+', y= '+str(y4),(x4+10,y4+10), 
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
+                    cv2.putText(image,'x= '+str(x4)+', y= '+str(y4)+', a1= '+str(int(angle4)),(x1+10,y1+10), 
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
 
             if len(cntsObstacle) >= 1:
                 for i in range(len(cntsObstacle)):
@@ -201,7 +213,7 @@ class Brain():
                         listObsy = np.append(listObsy, yo)
                         cv2.circle(image, (xo, yo), 5, (0, 0, 255), -1)
                         cv2.putText(image,'x='+str(x1)+', y='+str(y1),(x1+10,y1+10), 
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 0, 0), 1)
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 0, 0), 1)
             
             cv2.imshow('Robot Detector', image)
             cv2.imshow('Robot Detector1', filterGreen)
@@ -213,22 +225,23 @@ class Brain():
         if(len(listR1x)>0):
             x1 = int(np.mean(listR1x))
             y1 = int(np.mean(listR1y))
-            degree1 = 0
+            degree1 = int(np.mean(listR1angle))
+            
 
         if(len(listR2x)>0):
             x2 = int(np.mean(listR2x))
             y2 = int(np.mean(listR2y))
-            degree2 = 0
+            degree2 = int(np.mean(listR2angle))
 
         if(len(listR3x)>0):
             x3 = int(np.mean(listR3x))
             y3 = int(np.mean(listR3y))
-            degree3 = 0
+            degree3 = int(np.mean(listR3angle))
 
         if(len(listR4x)>0):
             x4 = int(np.mean(listR4x))
             y4 = int(np.mean(listR4y))
-            degree4 = 0
+            degree4 = int(np.mean(listR4angle))
 
 
         return x1, y1, degree1, x2, y2, degree2, x3, y3, degree3, x4, y4, degree4, listObsx, listObsy
@@ -280,9 +293,18 @@ class Brain():
             #robot4end = Thing(Position(x4, y4), degree1, 3, "End")
             path1, path2, path3, path4 = None, None, None, None
                 
-            came_from, cost_so_far, last = a_star_search(obstacles, robot1start, robot2end, 1, 1, 600)
-            path1 = createRoute(came_from, robot1start, last)
+            #came_from, cost_so_far, last = a_star_search(obstacles, robot1start, robot2end, 1, 1, 600)
+            #path1 = createRoute(came_from, robot1start, last)
             print("b")
+            # sx1,sy1 start x,y
+            # gx1, gy1 goal x,y
+            # ox, oy obstacles x,y
+            # grid size
+
+            grid_size = 0.5  # potential grid size [m]
+            robot_radius = 5.0  # robot radius [m]
+            rx1, ry1 = potential_field_planning(
+                robot1start.x, robot1start.y, robot2end.x,robot2end.y, ox, oy, grid_size, robot_radius)
             #came_from, cost_so_far, last = a_star_search(obstacles, robot2start, robot3end, 3, 4, 200)
             #path2 = createRoute(came_from, robot1start, last)
 
@@ -292,12 +314,20 @@ class Brain():
             #came_from, cost_so_far, last = a_star_search(obstacles, robot1start, robot2end, 3, 4, 200)
             #path4 = createRoute(came_from, robot1start, last)
             
+            path1=[(rx1[i], ry1[i]) for i in range(len(rx1))]
+            #path2=[(rx2[i], ry2[i]) for i in range(len(rx2))]
+            #path3=[(rx3[i], ry3[i]) for i in range(len(rx3))]
+            #path4=[(rx4[i], ry4[i]) for i in range(len(rx4))]
+            
             print(path1)
+            #print(path2)
+            #print(path3)
+            #print(path4)
             
             if path1:
                 #image = drawGrid(box_count, size, things, path[1:-1])  
-                start = State(path1[0][0], path1[0][1], path1[0][2])
-                targets = [State(i,j,k) for (i,j,k) in path1]
+                start = State(path1[0][0], path1[0][1], math.radians(90))
+                targets = [State(i,j, 0) for (i,j) in path1]
                 del targets[0]
                 self.conn1.send(Message.createRouteMessage(start, targets).__str__().encode())
             
@@ -310,8 +340,8 @@ class Brain():
             
             if path2:
                 #image = drawGrid(box_count, size, things, path[1:-1])  
-                start = State(path2[0][0], path2[0][1], path2[0][2])
-                targets = [State(i,j,k) for (i,j,k) in path2]
+                start = State(path2[0][0], path2[0][1], math.radians(90))
+                targets = [State(i,j, 0) for (i,j) in path2]
                 del targets[0]
                 self.conn2.send(Message.createRouteMessage(start, targets).__str__().encode())
             
@@ -324,8 +354,8 @@ class Brain():
             
             if path3:
                 #image = drawGrid(box_count, size, things, path[1:-1])  
-                start = State(path3[0][0], path3[0][1], path3[0][2])
-                targets = [State(i,j,k) for (i,j,k) in path3]
+                start = State(path3[0][0], path3[0][1], math.radians(90))
+                targets = [State(i,j, 0) for (i,j) in path3]
                 del targets[0]
                 self.conn3.send(Message.createRouteMessage(start, targets).__str__().encode())
             
@@ -338,8 +368,8 @@ class Brain():
             
             if path4:
                 #image = drawGrid(box_count, size, things, path[1:-1])  
-                start = State(path4[0][0], path4[0][1], path4[0][2])
-                targets = [State(i,j,k) for (i,j,k) in path4]
+                start = State(path4[0][0], path4[0][1], math.radians(90))
+                targets = [State(i,j, 0) for (i,j) in path4]
                 del targets[0]
                 self.conn4.send(Message.createRouteMessage(start, targets).__str__().encode())
             
@@ -539,7 +569,7 @@ def filterAndFindContours(lower, upper, image, doMorph=True, doErode=True, doDil
         mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
     #cnts = cv2.findContours(mask, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
     cnts = cv2.findContours(mask, cv2.RETR_EXTERNAL,
-        cv2.CHAIN_APPROX_SIMPLE)
+        cv2.CHAIN_APPROX_NONE)
         
     cnts = imutils.grab_contours(cnts)
     return cnts, mask

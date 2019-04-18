@@ -13,7 +13,7 @@ import time
 
 def main():
     frameSize = (640, 480)
-    vs = VideoStream(src=0, usePiCamera=True, resolution=frameSize, framerate=80).start()
+    vs = VideoStream(src=0, usePiCamera=False, resolution=frameSize, framerate=80).start()
     time.sleep(2.0)
     
 
@@ -92,9 +92,11 @@ def main():
             #Sort the contours by the area and check is it big enough to be a robot
             cntsRobotGreen.sort(key=cv2.contourArea, reverse=True)
             if cv2.contourArea(cntsRobotGreen[0])>50:
+                (x,y),(MA,ma),angle = cv2.fitEllipse(cntsRobotGreen[0])
+                
                 x1,y1 = getCenterOfBox(cntsRobotGreen[0])
                 cv2.circle(image, (x1, y1), 5, (0, 0, 255), -1)
-                cv2.putText(image,'x= '+str(x1)+', y= '+str(y1),(x1+10,y1+10), 
+                cv2.putText(image,'x= '+str(x1)+', y= '+str(y1)+', a1= '+str(int(angle)),(x1+10,y1+10), 
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
         
         if len(cntsRobotBlue) >= 1:
@@ -202,20 +204,23 @@ def main():
     vs.stop()
     cv2.destroyAllWindows()
 
-def filterAndFindContours(lower, upper, image, doMorph=True, doErode=True, doDilate=False):
+def filterAndFindContours(lower, upper, image, doMorph=False, doErode=False, doDilate=False):
     mask = cv2.inRange(image.copy(), lower, upper)   
 
-    kernel = np.ones((5,5),np.uint8)
+    kernel = np.ones((3,3),np.uint8)
     if doErode:
-        mask = cv2.erode(mask, kernel, iterations=3)
+        mask = cv2.erode(mask, kernel, iterations=2)
     if doDilate:
         mask = cv2.dilate(mask, kernel, iterations=2)
     if doMorph:
         mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
         mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
     #cnts = cv2.findContours(mask, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+    #cnts = cv2.findContours(mask, cv2.RETR_EXTERNAL,
+    #    cv2.CHAIN_APPROX_SIMPLE)
     cnts = cv2.findContours(mask, cv2.RETR_EXTERNAL,
-        cv2.CHAIN_APPROX_SIMPLE)
+        cv2.CHAIN_APPROX_NONE)
+    #CHAIN_APPROX_NONE
         
     cnts = imutils.grab_contours(cnts)
     return cnts, mask
@@ -333,9 +338,10 @@ def configureColorRange(image, hsvImage):
     obstacleLow=(int(obstacleLow[0]), int(obstacleLow[1]), int(obstacleLow[2]))
     obstacleHigh=(int(obstacleHigh[0]), int(obstacleHigh[1]), int(obstacleHigh[2]))
     
-    print((robot1Low, robot1High), (robot2Low, robot2High), (robot3Low, robot3High), (robot4Low, robot4High), (obstacleLow, obstacleHigh))
+    print(robot1Low, robot1High, robot1AvgL, robot1AvgH)
+    #print((robot1Low, robot1High), (robot2Low, robot2High), (robot3Low, robot3High), (robot4Low, robot4High), (obstacleLow, obstacleHigh))
     #return robotLow, robotHigh, obstacleLow, obstacleHigh
-    return (robot1Low, robot1High), (robot2Low, robot2High), (robot3Low, robot3High), (robot4Low, robot4High), (obstacleLow, obstacleHigh)
+    return (robot1AvgL, robot1AvgH), (robot2Low, robot2High), (robot3Low, robot3High), (robot4Low, robot4High), (obstacleLow, obstacleHigh)
     #return robotAvgL, robotAvgH, obstacleAvgL, obstacleAvgH
     
 def findRanges(image):
@@ -375,10 +381,10 @@ def findRanges(image):
         tmpS=tmpS/(count)
         tmpV=tmpV/(count)
 
-    return (max(0, lowH-15), max(0, lowS-25), max(0, lowV-30)), \
-        (min(255, highH+15), min(255, highS+25), min(255, highV+30)), \
-        (max(0, tmpH-10), max(0, tmpS-10), max(0, tmpV-20)), \
-        (min(255, tmpH+10), min(255, tmpS+10), min(255, tmpV+20))
+    return (max(0, lowH-15), max(0, lowS-40), max(0, lowV-50)), \
+        (min(255, highH+15), min(255, highS+40), min(255, highV+50)), \
+        (max(0, tmpH-20), max(100, tmpS-50), max(50, tmpV-60)), \
+        (min(255, tmpH+20), min(255, tmpS+50), min(255, tmpV+60))
 
 def fixAngle(angle):
         return math.atan2(math.sin(angle), math.cos(angle))
