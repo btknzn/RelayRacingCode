@@ -188,27 +188,42 @@ class PiController(Controller):
         #TODO: Needs to be implemented
         print(vr, vl)
         
-        
-        if (vr >= 0):
+        if (vr - vl)>5:
+            #left turn
             gpio.output(self.IN1, gpio.HIGH)
             gpio.output(self.IN2, gpio.LOW)
             pwn=self.calculatePwnValue(vr)
-            self.pwm1.changeDutyCycle(pwn)   
-        else:
-            gpio.output(self.IN1, gpio.LOW)
-            gpio.output(self.IN2, gpio.HIGH)
-            pwn=self.calculatePwnValue(vr)
-            self.pwm1.changeDutyCycle(pwn)
-        if (vl>=0):
-            gpio.output(self.IN3, gpio.HIGH)
-            gpio.output(self.IN4, gpio.LOW)
-            pwn=self.calculatePwnValue(vl)
-            self.pwm2.changeDutyCycle(pwn)
-        else:
+            self.pwm1.changeDutyCycle(pwn) 
+
             gpio.output(self.IN3, gpio.LOW)
             gpio.output(self.IN4, gpio.HIGH)
             pwn=self.calculatePwnValue(vl)
             self.pwm2.changeDutyCycle(pwn)
+
+        elif (vl- vr)>5:
+            #right turn
+            gpio.output(self.IN1, gpio.LOW)
+            gpio.output(self.IN2, gpio.HIGH)
+            pwn=self.calculatePwnValue(vr)
+            self.pwm1.changeDutyCycle(pwn)
+
+            gpio.output(self.IN3, gpio.HIGH)
+            gpio.output(self.IN4, gpio.LOW)
+            pwn=self.calculatePwnValue(vl)
+            self.pwm2.changeDutyCycle(pwn)
+            
+        elif vl>0 and vr>0:
+            #forward
+
+            gpio.output(self.IN1, gpio.HIGH)
+            gpio.output(self.IN2, gpio.LOW)
+            pwn=self.calculatePwnValue(vr)
+            self.pwm1.changeDutyCycle(pwn) 
+
+            gpio.output(self.IN3, gpio.HIGH)
+            gpio.output(self.IN4, gpio.LOW)
+            pwn=self.calculatePwnValue(vl)
+            self.pwm2.changeDutyCycle(pwn) 
         
 
         time.sleep(self.dt)
