@@ -16,6 +16,7 @@ from imutils.video import VideoStream
 from imutils.contours import sort_contours
 import time
 
+from potential_field_planning import potential_field_planning
 import signal
 
 
