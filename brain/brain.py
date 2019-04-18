@@ -174,7 +174,7 @@ class Brain():
                 #Sort the contours by the area and check is it big enough to be a robot
                 cntsRobotBlue.sort(key=cv2.contourArea, reverse=True)
                 if cv2.contourArea(cntsRobotBlue[0])>50:
-                    (x,y),(MA,ma),angle2 = cv2.fitEllipse(cntsRobotGreen[0])
+                    (x,y),(MA,ma),angle2 = cv2.fitEllipse(cntsRobotBlue[0])
                     x2,y2 = getCenterOfBox(cntsRobotBlue[0])
                     listR2x = np.append(listR2x, x2)                
                     listR2y = np.append(listR2y, y2)
@@ -187,7 +187,7 @@ class Brain():
                 #Sort the contours by the area and check is it big enough to be a robot
                 cntsRobotRed.sort(key=cv2.contourArea, reverse=True)
                 if cv2.contourArea(cntsRobotRed[0])>50:
-                    (x,y),(MA,ma),angle3 = cv2.fitEllipse(cntsRobotGreen[0])
+                    (x,y),(MA,ma),angle3 = cv2.fitEllipse(cntsRobotRed[0])
                     x3,y3 = getCenterOfBox(cntsRobotRed[0])
                     listR3x = np.append(listR3x, x3)                
                     listR3y = np.append(listR3y, y3)
@@ -200,7 +200,7 @@ class Brain():
                 #Sort the contours by the area and check is it big enough to be a robot
                 cntsRobotYellow.sort(key=cv2.contourArea, reverse=True)
                 if cv2.contourArea(cntsRobotYellow[0])>50:
-                    (x,y),(MA,ma),angle4 = cv2.fitEllipse(cntsRobotGreen[0])
+                    (x,y),(MA,ma),angle4 = cv2.fitEllipse(cntsRobotYellow[0])
                     x4,y4 = getCenterOfBox(cntsRobotYellow[0])
                     listR4x = np.append(listR3x, x4)                
                     listR4y = np.append(listR3y, y4)
