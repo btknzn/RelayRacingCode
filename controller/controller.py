@@ -212,7 +212,7 @@ class PiController(Controller):
             pwn=self.calculatePwnValue(vl)
             self.pwm2.changeDutyCycle(pwn)
             
-        elif vl>0 and vr>0:
+        else:
             #forward
 
             gpio.output(self.IN1, gpio.HIGH)
