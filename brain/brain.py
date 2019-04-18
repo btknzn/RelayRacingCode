@@ -133,6 +133,9 @@ class Brain():
         listObsy = np.array([])
         
         while True:
+
+            listObsx = np.array([])
+            listObsy = np.array([])
             image = self.vs.read()
             blurred2 = cv2.GaussianBlur(image.copy(), (25, 25), 0)
             blurred = cv2.blur(image.copy(),(25,25))
@@ -312,6 +315,7 @@ class Brain():
 
             grid_size = 0.5  # potential grid size [m]
             robot_radius = 5.0  # robot radius [m]
+            print(robot1start.x, robot1start.y, robot2end.x,robot2end.y, ox, oy, grid_size, robot_radius)
             rx1, ry1 = potential_field_planning(
                 robot1start.x, robot1start.y, robot2end.x,robot2end.y, ox, oy, grid_size, robot_radius)
             #came_from, cost_so_far, last = a_star_search(obstacles, robot2start, robot3end, 3, 4, 200)
