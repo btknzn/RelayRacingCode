@@ -649,10 +649,10 @@ def findRanges(image):
         tmpS=tmpS/(count)
         tmpV=tmpV/(count)
 
-    return (max(0, lowH-10), max(0, lowS-25), max(0, lowV-30)), \
-        (min(255, highH+10), min(255, highS+25), min(255, highV+30)), \
-        (max(0, tmpH-10), max(0, tmpS-10), max(0, tmpV-20)), \
-        (min(255, tmpH+10), min(255, tmpS+10), min(255, tmpV+20))
+    return (max(0, lowH-10), max(0, lowS-20), max(0, lowV-20)), \
+        (min(255, highH+10), min(255, highS+20), min(255, highV+20)), \
+        (max(0, tmpH-20), max(100, tmpS-50), max(50, tmpV-60)), \
+        (min(255, tmpH+20), min(255, tmpS+50), min(255, tmpV+60))
 
 
 def fixAngle(angle):
