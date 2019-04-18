@@ -219,7 +219,7 @@ class Brain():
                         listObsx = np.append(listObsx, xo)
                         listObsy = np.append(listObsy, yo)
                         cv2.circle(image, (xo, yo), 5, (0, 0, 255), -1)
-                        cv2.putText(image,'x='+str(x1)+', y='+str(y1),(x1+10,y1+10), 
+                        cv2.putText(image,'x='+str(xo)+', y='+str(y0),(xo+10,yo+10), 
                             cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 0, 0), 1)
             
             cv2.imshow('Robot Detector', image)
