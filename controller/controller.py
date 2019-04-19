@@ -201,7 +201,7 @@ class PiController(Controller):
         #TODO: Needs to be implemented
         print(self.current, self.goal, vr, vl)
         
-        if (vr - vl)>5:
+        if (vr - vl)>2:
             
             #left turn
             gpio.output(self.IN1, gpio.HIGH)
@@ -214,7 +214,7 @@ class PiController(Controller):
             pwn=self.calculatePwnValue(vl)
             self.pwm2.changeDutyCycle(pwn)
 
-        elif (vl- vr)>5:
+        elif (vl- vr)>2:
             
             #right turn
             gpio.output(self.IN1, gpio.LOW)
