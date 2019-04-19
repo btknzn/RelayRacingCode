@@ -206,12 +206,12 @@ class PiController(Controller):
             #left turn
             gpio.output(self.IN1, gpio.HIGH)
             gpio.output(self.IN2, gpio.LOW)
-            pwn=self.calculatePwnValue(vr)
+            pwn=self.calculatePwnValue(2*vr)
             self.pwm1.changeDutyCycle(80) 
 
             gpio.output(self.IN3, gpio.LOW)
             gpio.output(self.IN4, gpio.HIGH)
-            pwn=self.calculatePwnValue(vl)
+            pwn=self.calculatePwnValue(2*vl)
             self.pwm2.changeDutyCycle(80)
 
         elif (vl- vr)>5:
@@ -219,12 +219,12 @@ class PiController(Controller):
             #right turn
             gpio.output(self.IN1, gpio.LOW)
             gpio.output(self.IN2, gpio.HIGH)
-            pwn=self.calculatePwnValue(vr)
+            pwn=self.calculatePwnValue(2*vr)
             self.pwm1.changeDutyCycle(pwn)
 
             gpio.output(self.IN3, gpio.HIGH)
             gpio.output(self.IN4, gpio.LOW)
-            pwn=self.calculatePwnValue(vl)
+            pwn=self.calculatePwnValue(2*vl)
             self.pwm2.changeDutyCycle(pwn)
             
         else:
