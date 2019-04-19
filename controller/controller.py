@@ -66,6 +66,10 @@ class PiController(Controller):
         self.socket.close()
         self.pwm1.stop()
         self.pwm1.stop()
+        gpio.output(self.IN1, gpio.LOW)
+        gpio.output(self.IN2, gpio.LOW)
+        gpio.output(self.IN3, gpio.LOW)
+        gpio.output(self.IN4, gpio.LOW)
 
 
     def run(self):
