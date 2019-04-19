@@ -240,7 +240,7 @@ class PiController(Controller):
             #pwn=self.calculatePwnValue(vl)
         
 
-        time.sleep(self.dt*3)
+        time.sleep(self.dt*10)
         gpio.output(self.IN1, gpio.LOW)
         gpio.output(self.IN2, gpio.LOW)
         gpio.output(self.IN3, gpio.LOW)
