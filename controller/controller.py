@@ -200,19 +200,19 @@ class PiController(Controller):
         #TODO: Needs to be implemented
         print(self.current, self.goal, vr, vl)
         
-        if (vr - vl)>0.6:
+        if (vr - vl)>0.3:
             #left turn
             gpio.output(self.IN1, gpio.HIGH)
             gpio.output(self.IN2, gpio.LOW)
             pwn=self.calculatePwnValue(vr)
-            self.pwm1.changeDutyCycle(pwn) 
+            self.pwm1.changeDutyCycle(400) 
 
             gpio.output(self.IN3, gpio.LOW)
             gpio.output(self.IN4, gpio.HIGH)
             pwn=self.calculatePwnValue(vl)
-            self.pwm2.changeDutyCycle(pwn)
+            self.pwm2.changeDutyCycle(400)
 
-        elif (vl- vr)>0.6:
+        elif (vl- vr)>0.3:
             #right turn
             gpio.output(self.IN1, gpio.LOW)
             gpio.output(self.IN2, gpio.HIGH)
