@@ -234,7 +234,7 @@ class PiController(Controller):
             pwn=self.calculatePwnValue(vl)
             self.pwm2.changeDutyCycle(pwn)
 
-            time.sleep(self.dt*3)
+            time.sleep(self.dt*4)
 
         elif (vl- vr)>0:
             
@@ -268,7 +268,7 @@ class PiController(Controller):
             pwn=self.calculatePwnValue(vl)
             self.pwm2.changeDutyCycle(pwn) 
 
-            time.sleep(self.dt*3)
+            time.sleep(self.dt*4)
 
 
             
@@ -289,7 +289,7 @@ class PiController(Controller):
             
         
 
-            time.sleep(self.dt*3)
+            time.sleep(self.dt*4)
         gpio.output(self.IN1, gpio.LOW)
         gpio.output(self.IN2, gpio.LOW)
         gpio.output(self.IN3, gpio.LOW)
@@ -304,7 +304,7 @@ class PiController(Controller):
 
     def calculatePwnValue(self, power):
         power=abs(power)
-        pwn=power*12
+        pwn=power*10
         return pwn
 
 def main():
