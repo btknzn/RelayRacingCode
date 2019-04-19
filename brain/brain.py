@@ -19,6 +19,7 @@ import time
 from potential_field_planning import potential_field_planning
 import signal
 
+frameSize = (640, 480)
 
 
 def main():
@@ -75,7 +76,6 @@ class Brain():
         s4.listen(1)
         self.conn4, self.addr4 = s4.accept()
         """
-        frameSize = (640, 480)
         print ('Connection address1:', self.addr1)
         #print ('Connection address2:', self.addr2)
         #print ('Connection address3:', self.addr3)
@@ -163,11 +163,11 @@ class Brain():
                     (x,y),(MA,ma),angle1 = cv2.fitEllipse(cntsRobotGreen[0])
                     x1,y1 = getCenterOfBox(cntsRobotGreen[0])
                     listR1x = np.append(listR1x, x1)                
-                    listR1y = np.append(listR1y, y1)
+                    listR1y = np.append(listR1y, frameSize[1]-y1)
                     listR1angle = np.append(listR1angle, angle1)
 
                     cv2.circle(image, (x1, y1), 5, (0, 0, 255), -1)
-                    cv2.putText(image,'x= '+str(x1)+', y= '+str(y1)+', a1= '+str(int(angle1)),(x1+10,y1+10), 
+                    cv2.putText(image,'x= '+str(x1)+', y= '+str(frameSize[1]-y1)+', a1= '+str(int(angle1)),(x1+10,y1+10), 
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
             
             if len(cntsRobotBlue) >= 1:
@@ -177,11 +177,11 @@ class Brain():
                     (x,y),(MA,ma),angle2 = cv2.fitEllipse(cntsRobotBlue[0])
                     x2,y2 = getCenterOfBox(cntsRobotBlue[0])
                     listR2x = np.append(listR2x, x2)                
-                    listR2y = np.append(listR2y, y2)
+                    listR2y = np.append(listR2y, frameSize[1]-y2)
                     listR2angle = np.append(listR2angle, angle2)
 
                     cv2.circle(image, (x2, y2), 5, (0, 0, 255), -1)
-                    cv2.putText(image,'x= '+str(x2)+', y= '+str(y2)+', a1= '+str(int(angle2)),(x2+10,y2+10), 
+                    cv2.putText(image,'x= '+str(x2)+', y= '+str(frameSize[1]-y2)+', a1= '+str(int(angle2)),(x2+10,y2+10), 
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
             if len(cntsRobotRed) >= 1:
                 #Sort the contours by the area and check is it big enough to be a robot
@@ -190,11 +190,11 @@ class Brain():
                     (x,y),(MA,ma),angle3 = cv2.fitEllipse(cntsRobotRed[0])
                     x3,y3 = getCenterOfBox(cntsRobotRed[0])
                     listR3x = np.append(listR3x, x3)                
-                    listR3y = np.append(listR3y, y3)
+                    listR3y = np.append(listR3y, frameSize[1]-y3)
                     listR3angle = np.append(listR3angle, angle3)
 
                     cv2.circle(image, (x3, y3), 5, (0, 0, 255), -1)
-                    cv2.putText(image,'x= '+str(x3)+', y= '+str(y3)+', a1= '+str(int(angle3)),(x3+10,y3+10), 
+                    cv2.putText(image,'x= '+str(x3)+', y= '+str(frameSize[1]-y3)+', a1= '+str(int(angle3)),(x3+10,y3+10), 
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
             if len(cntsRobotYellow) >= 1:
                 #Sort the contours by the area and check is it big enough to be a robot
@@ -203,11 +203,11 @@ class Brain():
                     (x,y),(MA,ma),angle4 = cv2.fitEllipse(cntsRobotYellow[0])
                     x4,y4 = getCenterOfBox(cntsRobotYellow[0])
                     listR4x = np.append(listR3x, x4)                
-                    listR4y = np.append(listR3y, y4)
+                    listR4y = np.append(listR3y, frameSize[1]-y4)
                     listR4angle = np.append(listR4angle, angle4)
 
                     cv2.circle(image, (x4, y4), 5, (0, 0, 255), -1)
-                    cv2.putText(image,'x= '+str(x4)+', y= '+str(y4)+', a1= '+str(int(angle4)),(x4+10,y4+10), 
+                    cv2.putText(image,'x= '+str(x4)+', y= '+str(frameSize[1]-y4)+', a1= '+str(int(angle4)),(x4+10,y4+10), 
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
 
             if len(cntsObstacle) >= 1:
@@ -218,9 +218,9 @@ class Brain():
                     if (cv2.contourArea(cntsObstacle[i])>30):
                         xo,yo = getCenterOfBox(cntsObstacle[i])
                         listObsx = np.append(listObsx, xo)
-                        listObsy = np.append(listObsy, yo)
+                        listObsy = np.append(listObsy, frameSize[1]-yo)
                         cv2.circle(image, (xo, yo), 5, (0, 0, 255), -1)
-                        cv2.putText(image,'x='+str(xo)+', y='+str(yo),(xo+10,yo+10), 
+                        cv2.putText(image,'x='+str(xo)+', y='+str(frameSize[1]-yo),(xo+10,yo+10), 
                             cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 0, 0), 1)
             
             cv2.imshow('Robot Detector', image)
