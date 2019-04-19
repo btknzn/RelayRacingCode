@@ -4,7 +4,7 @@ from pyA20.gpio import port
 from time import sleep
 from orangepwm import *
 
-self.IN = port.PA15
+self.IN = port.PA19
 
 gpio.init()
 
