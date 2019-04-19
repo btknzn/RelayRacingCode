@@ -151,7 +151,8 @@ class PiController(Controller):
                         # iterate the PID controller using the current location and the routes
                     # else
                         # do nothing, pass
-
+            print("Arrive check:",str(abs(self.current.x - self.goal.x)), str(abs(self.current.y - self.goal.y)), self.isArrived())
+        
             if self.isArrived():
                 self.goalIndex = self.goalIndex + 1
                 self.state = self.Running
