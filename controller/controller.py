@@ -201,20 +201,20 @@ class PiController(Controller):
         #TODO: Needs to be implemented
         print(self.current, self.goal, vr, vl)
         
-        if (vr - vl)>5:
+        if (vr - vl)>7:
             
             #left turn
             gpio.output(self.IN1, gpio.HIGH)
             gpio.output(self.IN2, gpio.LOW)
             pwn=self.calculatePwnValue(vr)
-            self.pwm1.changeDutyCycle(30) 
+            self.pwm1.changeDutyCycle(pwn) 
 
             gpio.output(self.IN3, gpio.LOW)
             gpio.output(self.IN4, gpio.HIGH)
             pwn=self.calculatePwnValue(vl)
-            self.pwm2.changeDutyCycle(30)
+            self.pwm2.changeDutyCycle(pwn)
 
-        elif (vl- vr)>5:
+        elif (vl- vr)>7:
             
             #right turn
             gpio.output(self.IN1, gpio.LOW)
@@ -259,7 +259,7 @@ class PiController(Controller):
 
     def calculatePwnValue(self, power):
         power=abs(power)
-        pwn=power*100
+        pwn=power*30
         return pwn
 
 def main():
