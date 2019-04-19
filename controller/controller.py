@@ -53,10 +53,11 @@ class PiController(Controller):
         gpio.setcfg(self.IN4, gpio.OUTPUT)
         gpio.setcfg(self.PWMPIN1, gpio.OUTPUT)
         gpio.setcfg(self.PWMPIN2, gpio.OUTPUT)
-        self.pwm1 = OrangePwm(100, self.PWMPIN1)
-        self.pwm2 = OrangePwm(100, self.PWMPIN2)
-        self.pwm1.start(100)
-        self.pwm2.start(100)
+        
+        #self.pwm1 = OrangePwm(100, self.PWMPIN1)
+        #self.pwm2 = OrangePwm(100, self.PWMPIN2)
+        #self.pwm1.start(100)
+        #self.pwm2.start(100)
 
 
         
@@ -64,8 +65,8 @@ class PiController(Controller):
     def close(self):
         self.closed = True
         self.socket.close()
-        self.pwm1.stop()
-        self.pwm1.stop()
+        #self.pwm1.stop()
+        #self.pwm1.stop()
         gpio.output(self.IN1, gpio.LOW)
         gpio.output(self.IN2, gpio.LOW)
         gpio.output(self.IN3, gpio.LOW)
@@ -200,6 +201,8 @@ class PiController(Controller):
         #TODO: Needs to be implemented
         print(self.current, self.goal, vr, vl)
         
+        gpio.output(self.PWMPIN1, gpio.HIGH)
+        gpio.output(self.PWMPIN2, gpio.HIGH)
         if (vr - vl)>0.6:
             sleepTime = vr
             #left turn
