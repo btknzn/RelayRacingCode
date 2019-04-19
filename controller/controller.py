@@ -54,8 +54,8 @@ class PiController(Controller):
         gpio.setcfg(self.PWMPIN1, gpio.OUTPUT)
         gpio.setcfg(self.PWMPIN2, gpio.OUTPUT)
         
-        self.pwm1 = OrangePwm(100, self.PWMPIN1)
-        self.pwm2 = OrangePwm(100, self.PWMPIN2)
+        self.pwm1 = OrangePwm(10, self.PWMPIN1)
+        self.pwm2 = OrangePwm(10, self.PWMPIN2)
         self.pwm1.start(100)
         self.pwm2.start(100)
 
