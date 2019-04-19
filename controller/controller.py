@@ -200,8 +200,8 @@ class PiController(Controller):
         #TODO: Needs to be implemented
         print(self.current, self.goal, vr, vl)
         
-        if (vr - vl)>0.3:
-            sleepTime = 1+vr
+        if (vr - vl)>0.6:
+            sleepTime = vr
             #left turn
             gpio.output(self.IN1, gpio.HIGH)
             gpio.output(self.IN2, gpio.LOW)
@@ -213,8 +213,8 @@ class PiController(Controller):
             #pwn=self.calculatePwnValue(vl)
             #self.pwm2.changeDutyCycle(80)
 
-        elif (vl- vr)>0.3:
-            sleepTime = 1+vl
+        elif (vl- vr)>0.6:
+            sleepTime = vl
             #right turn
             gpio.output(self.IN1, gpio.LOW)
             gpio.output(self.IN2, gpio.HIGH)
@@ -228,7 +228,7 @@ class PiController(Controller):
             
         else:
             #forward
-            sleepTime = 2
+            sleepTime = 1
             gpio.output(self.IN1, gpio.HIGH)
             gpio.output(self.IN2, gpio.LOW)
             #pwn=self.calculatePwnValue(vr)
