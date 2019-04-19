@@ -164,6 +164,8 @@ class PiController(Controller):
                 if message and message.type == Message.LocationMessageType:
                     self.current = message.location
                     angle = math.degrees(math.atan2(self.goal.y-self.current.y, self.goal.x-self.current.x))
+                    
+                    print(self.current, self.goal, angle)
                     if 75 < angle and angle < 105:
                         #forward
                         gpio.output(self.IN1, gpio.HIGH)
