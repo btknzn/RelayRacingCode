@@ -309,8 +309,8 @@ class Brain():
             # grid size
             
             
-            grid_size = 25.0  # potential grid size [m]
-            robot_radius = 10.0  # robot radius [m]
+            grid_size = 20.0  # potential grid size [m]
+            robot_radius = 5.0  # robot radius [m]
             rx1, ry1 = potential_field_planning(
                 x1, y1, x2, y2, listObsx, listObsy, grid_size, robot_radius)
             #came_from, cost_so_far, last = a_star_search(obstacles, robot2start, robot3end, 3, 4, 200)
