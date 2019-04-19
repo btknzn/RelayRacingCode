@@ -168,6 +168,7 @@ class PiController(Controller):
             pass
     def normalize(self, v, w):
         vr, vl = self.uniToDiff(v,w)
+        
         vmax = (2*v + math.radians(180)*self.L)/(2*self.R)
         vmin= (2*v + math.radians(-180)*self.L)/(2*self.R)
 
@@ -177,10 +178,16 @@ class PiController(Controller):
 
     def makeAction(self, v, w):
 
-        vr, vl = self.normalize(v,w)
-        #vr, vl = self.uniToDiff(v,w)
+        #vr, vl = self.normalize(v,w)
+        vr, vl = self.uniToDiff(v,w)
         # Motor code to 
         #print(nvr, nvl)
+        if(vr>=vl):
+            tmpvr = vr - vl
+            tmpvl = 0
+        else:
+            tmpvr = 0
+            tmpvl = vl - vr
 
         # set the pwmRight and pwmLeft pins to given vr and vl voltages
         # sleep for dt seconds
@@ -188,7 +195,7 @@ class PiController(Controller):
         #TODO: Needs to be implemented
         print(self.current, self.goal, vr, vl)
         
-        if (vr - vl)>3:
+        if (vr - vl)>4:
             #left turn
             gpio.output(self.IN1, gpio.HIGH)
             gpio.output(self.IN2, gpio.LOW)
@@ -200,7 +207,7 @@ class PiController(Controller):
             pwn=self.calculatePwnValue(vl)
             self.pwm2.changeDutyCycle(pwn)
 
-        elif (vl- vr)>3:
+        elif (vl- vr)>4:
             #right turn
             gpio.output(self.IN1, gpio.LOW)
             gpio.output(self.IN2, gpio.HIGH)
