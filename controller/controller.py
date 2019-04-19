@@ -183,8 +183,8 @@ class PiController(Controller):
 
     def makeAction(self, v, w):
 
-        vr, vl = self.normalize(v,w)
-        #vr, vl = self.uniToDiff(v,w)
+        #vr, vl = self.normalize(v,w)
+        vr, vl = self.uniToDiff(v,w)
         # Motor code to 
         #print(nvr, nvl)
         if(vr>=vl):
@@ -200,7 +200,7 @@ class PiController(Controller):
         #TODO: Needs to be implemented
         print(self.current, self.goal, vr, vl)
         
-        if (tmpvr - tmpvl)>0.5:
+        if (vr - vl)>5:
             #left turn
             gpio.output(self.IN1, gpio.HIGH)
             gpio.output(self.IN2, gpio.LOW)
@@ -212,7 +212,7 @@ class PiController(Controller):
             pwn=self.calculatePwnValue(vl)
             self.pwm2.changeDutyCycle(pwn)
 
-        elif (tmpvl- tmpvr)>0.5:
+        elif (vl- vr)>5:
             #right turn
             gpio.output(self.IN1, gpio.LOW)
             gpio.output(self.IN2, gpio.HIGH)
