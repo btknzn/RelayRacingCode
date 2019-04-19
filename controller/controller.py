@@ -163,9 +163,50 @@ class PiController(Controller):
                 message = Message.create(data.decode())
                 if message and message.type == Message.LocationMessageType:
                     self.current = message.location
-                    v, w = self.iteratePID()
+                    angle = math.degrees(math.atan2(self.goal.y-self.current.y, self.goal.x-self.current.x))
+                    if 75 < angle and angle < 105:
+                        #forward
+                        gpio.output(self.IN1, gpio.HIGH)
+                        gpio.output(self.IN2, gpio.LOW)
+                        #pwn=self.calculatePwnValue(vr)
+                        self.pwm1.changeDutyCycle(1000) 
+
+                        gpio.output(self.IN3, gpio.HIGH)
+                        gpio.output(self.IN4, gpio.LOW)
+                        #pwn=self.calculatePwnValue(vl)
+                        self.pwm2.changeDutyCycle(1000) 
+                        
+                    elif angle< 75 and angle >-90:
+                        #turn right
+                        gpio.output(self.IN1, gpio.LOW)
+                        gpio.output(self.IN2, gpio.HIGH)
+                        
+                        self.pwm1.changeDutyCycle(200)
+
+                        gpio.output(self.IN3, gpio.HIGH)
+                        gpio.output(self.IN4, gpio.LOW)
+                        
+                        self.pwm2.changeDutyCycle(200)
+                    else:
+                        #turn left
+                        gpio.output(self.IN1, gpio.HIGH)
+                        gpio.output(self.IN2, gpio.LOW)
+                        
+                        self.pwm1.changeDutyCycle(200) 
+
+                        gpio.output(self.IN3, gpio.LOW)
+                        gpio.output(self.IN4, gpio.HIGH)
+                        
+                        self.pwm2.changeDutyCycle(200)
+
+     
+
+            
+                    
+                    
+                    #v, w = self.iteratePID()
                     #print(v,w)
-                    self.makeAction(v, w)
+                    #self.makeAction(v, w)
                     
                 else:
                     pass
