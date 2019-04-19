@@ -205,24 +205,24 @@ class PiController(Controller):
             gpio.output(self.IN1, gpio.HIGH)
             gpio.output(self.IN2, gpio.LOW)
             pwn=self.calculatePwnValue(vr)
-            self.pwm1.changeDutyCycle(400) 
+            self.pwm1.changeDutyCycle(80) 
 
             gpio.output(self.IN3, gpio.LOW)
             gpio.output(self.IN4, gpio.HIGH)
             pwn=self.calculatePwnValue(vl)
-            self.pwm2.changeDutyCycle(400)
+            self.pwm2.changeDutyCycle(80)
 
         elif (vl- vr)>0.3:
             #right turn
             gpio.output(self.IN1, gpio.LOW)
             gpio.output(self.IN2, gpio.HIGH)
             pwn=self.calculatePwnValue(vr)
-            self.pwm1.changeDutyCycle(400)
+            self.pwm1.changeDutyCycle(80)
 
             gpio.output(self.IN3, gpio.HIGH)
             gpio.output(self.IN4, gpio.LOW)
             pwn=self.calculatePwnValue(vl)
-            self.pwm2.changeDutyCycle(400)
+            self.pwm2.changeDutyCycle(80)
             
         else:
             #forward
@@ -231,13 +231,13 @@ class PiController(Controller):
             gpio.output(self.IN2, gpio.LOW)
             #pwn=self.calculatePwnValue(vr)
             pwn=self.calculatePwnValue(vr)
-            self.pwm1.changeDutyCycle(500) 
+            self.pwm1.changeDutyCycle(80) 
 
             gpio.output(self.IN3, gpio.HIGH)
             gpio.output(self.IN4, gpio.LOW)
             #pwn=self.calculatePwnValue(vl)
             pwn=self.calculatePwnValue(vl)
-            self.pwm2.changeDutyCycle(500) 
+            self.pwm2.changeDutyCycle(80) 
         
 
         time.sleep(self.dt*5)
