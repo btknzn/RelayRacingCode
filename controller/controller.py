@@ -186,9 +186,9 @@ class PiController(Controller):
         # sleep for dt seconds
         # set the pwmLeft and 
         #TODO: Needs to be implemented
-        print(vr, vl)
+        print(self.current, self.goal, vr, vl)
         
-        if (vr - vl)>5:
+        if (vr - vl)>3:
             #left turn
             gpio.output(self.IN1, gpio.HIGH)
             gpio.output(self.IN2, gpio.LOW)
@@ -200,7 +200,7 @@ class PiController(Controller):
             pwn=self.calculatePwnValue(vl)
             self.pwm2.changeDutyCycle(pwn)
 
-        elif (vl- vr)>5:
+        elif (vl- vr)>3:
             #right turn
             gpio.output(self.IN1, gpio.LOW)
             gpio.output(self.IN2, gpio.HIGH)
@@ -226,7 +226,7 @@ class PiController(Controller):
             self.pwm2.changeDutyCycle(pwn) 
         
 
-        time.sleep(self.dt)
+        time.sleep(self.dt*2)
         gpio.output(self.IN1, gpio.LOW)
         gpio.output(self.IN2, gpio.LOW)
         gpio.output(self.IN3, gpio.LOW)
