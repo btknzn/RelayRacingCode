@@ -231,7 +231,7 @@ class PiController(Controller):
             
         else:
             #forward
-            sleepTime = 1
+            sleepTime = 2
             gpio.output(self.IN1, gpio.HIGH)
             gpio.output(self.IN2, gpio.LOW)
             #pwn=self.calculatePwnValue(vr)
