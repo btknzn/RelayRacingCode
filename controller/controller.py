@@ -201,7 +201,7 @@ class PiController(Controller):
         #TODO: Needs to be implemented
         print(self.current, self.goal, vr, vl)
         
-        if (vr - vl)>1:
+        if (vr - vl)>0:
             
             #left turn
             gpio.output(self.IN1, gpio.HIGH)
@@ -236,7 +236,7 @@ class PiController(Controller):
 
             time.sleep(self.dt*3)
 
-        elif (vl- vr)>1:
+        elif (vl- vr)>0:
             
             #right turn
             gpio.output(self.IN1, gpio.LOW)
