@@ -208,8 +208,8 @@ class PiController(Controller):
             #pwn=self.calculatePwnValue(vr)
             #self.pwm1.changeDutyCycle(80) 
 
-            gpio.output(self.IN3, gpio.LOW)
-            gpio.output(self.IN4, gpio.HIGH)
+            #gpio.output(self.IN3, gpio.LOW)
+            #gpio.output(self.IN4, gpio.HIGH)
             #pwn=self.calculatePwnValue(vl)
             #self.pwm2.changeDutyCycle(80)
 
@@ -221,8 +221,8 @@ class PiController(Controller):
             #pwn=self.calculatePwnValue(vr)
             #self.pwm1.changeDutyCycle(80)
 
-            gpio.output(self.IN3, gpio.HIGH)
-            gpio.output(self.IN4, gpio.LOW)
+            #gpio.output(self.IN3, gpio.HIGH)
+            #gpio.output(self.IN4, gpio.LOW)
             #pwn=self.calculatePwnValue(vl)
             #self.pwm2.changeDutyCycle(80)
             
