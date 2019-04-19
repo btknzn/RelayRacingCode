@@ -155,6 +155,7 @@ class PiController(Controller):
             if self.isArrived():
                 self.goalIndex = self.goalIndex + 1
                 self.state = self.Running
+                print("Goal arrived, heading to next goal")
             else:
                 msg = Message.createGetLocationMessage()
                 self.socket.send(msg.__str__().encode())
