@@ -259,7 +259,7 @@ class PiController(Controller):
 
     def calculatePwnValue(self, power):
         power=abs(power)
-        pwn=power*100
+        pwn=power*1000
         return pwn
 
 def main():
