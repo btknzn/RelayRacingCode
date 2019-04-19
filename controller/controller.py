@@ -201,7 +201,7 @@ class PiController(Controller):
         #TODO: Needs to be implemented
         print(self.current, self.goal, vr, vl)
         
-        if (vr - vl)>2:
+        if (vr - vl)>1:
             
             #left turn
             gpio.output(self.IN1, gpio.HIGH)
@@ -215,7 +215,7 @@ class PiController(Controller):
             self.pwm2.changeDutyCycle(pwn)
 
 
-            time.sleep(self.dt*2)
+            time.sleep(self.dt*1)
             gpio.output(self.IN1, gpio.LOW)
             gpio.output(self.IN2, gpio.LOW)
             gpio.output(self.IN3, gpio.LOW)
@@ -234,9 +234,9 @@ class PiController(Controller):
             pwn=self.calculatePwnValue(vl)
             self.pwm2.changeDutyCycle(pwn)
 
-            time.sleep(self.dt*2)
+            time.sleep(self.dt*3)
 
-        elif (vl- vr)>2:
+        elif (vl- vr)>1:
             
             #right turn
             gpio.output(self.IN1, gpio.LOW)
@@ -250,7 +250,7 @@ class PiController(Controller):
             self.pwm2.changeDutyCycle(pwn)
 
 
-            time.sleep(self.dt*2)
+            time.sleep(self.dt*1)
             gpio.output(self.IN1, gpio.LOW)
             gpio.output(self.IN2, gpio.LOW)
             gpio.output(self.IN3, gpio.LOW)
@@ -268,7 +268,7 @@ class PiController(Controller):
             pwn=self.calculatePwnValue(vl)
             self.pwm2.changeDutyCycle(pwn) 
 
-            time.sleep(self.dt*2)
+            time.sleep(self.dt*3)
 
 
             
