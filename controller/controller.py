@@ -155,7 +155,7 @@ class PiController(Controller):
             
             for i in range(self.goalIndex,len(self.target)):
                 if self.isArrived(self.target[i]):
-                    self.goalIndex = self.goalIndex + 1
+                    self.goalIndex = i + 1
                     self.state = self.Running
                 #print("Goal arrived, heading to next goal")
             else:
