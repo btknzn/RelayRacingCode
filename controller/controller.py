@@ -201,46 +201,48 @@ class PiController(Controller):
         print(self.current, self.goal, vr, vl)
         
         if (vr - vl)>0.3:
+            sleepTime = vr
             #left turn
             gpio.output(self.IN1, gpio.HIGH)
             gpio.output(self.IN2, gpio.LOW)
-            pwn=self.calculatePwnValue(vr)
-            self.pwm1.changeDutyCycle(80) 
+            #pwn=self.calculatePwnValue(vr)
+            #self.pwm1.changeDutyCycle(80) 
 
             gpio.output(self.IN3, gpio.LOW)
             gpio.output(self.IN4, gpio.HIGH)
-            pwn=self.calculatePwnValue(vl)
-            self.pwm2.changeDutyCycle(80)
+            #pwn=self.calculatePwnValue(vl)
+            #self.pwm2.changeDutyCycle(80)
 
         elif (vl- vr)>0.3:
+            sleepTime = vl
             #right turn
             gpio.output(self.IN1, gpio.LOW)
             gpio.output(self.IN2, gpio.HIGH)
-            pwn=self.calculatePwnValue(vr)
-            self.pwm1.changeDutyCycle(80)
-
-            gpio.output(self.IN3, gpio.HIGH)
-            gpio.output(self.IN4, gpio.LOW)
-            pwn=self.calculatePwnValue(vl)
-            self.pwm2.changeDutyCycle(80)
-            
-        else:
-            #forward
-
-            gpio.output(self.IN1, gpio.HIGH)
-            gpio.output(self.IN2, gpio.LOW)
             #pwn=self.calculatePwnValue(vr)
-            pwn=self.calculatePwnValue(vr)
-            self.pwm1.changeDutyCycle(80) 
+            #self.pwm1.changeDutyCycle(80)
 
             gpio.output(self.IN3, gpio.HIGH)
             gpio.output(self.IN4, gpio.LOW)
             #pwn=self.calculatePwnValue(vl)
-            pwn=self.calculatePwnValue(vl)
-            self.pwm2.changeDutyCycle(80) 
+            #self.pwm2.changeDutyCycle(80)
+            
+        else:
+            #forward
+            sleepTime = 1
+            gpio.output(self.IN1, gpio.HIGH)
+            gpio.output(self.IN2, gpio.LOW)
+            #pwn=self.calculatePwnValue(vr)
+            #pwn=self.calculatePwnValue(vr)
+            #self.pwm1.changeDutyCycle(80) 
+
+            gpio.output(self.IN3, gpio.HIGH)
+            gpio.output(self.IN4, gpio.LOW)
+            #pwn=self.calculatePwnValue(vl)
+            #pwn=self.calculatePwnValue(vl)
+            #self.pwm2.changeDutyCycle(80) 
         
 
-        time.sleep(self.dt*5)
+        time.sleep(self.dt*5*sleepTime)
         gpio.output(self.IN1, gpio.LOW)
         gpio.output(self.IN2, gpio.LOW)
         gpio.output(self.IN3, gpio.LOW)
