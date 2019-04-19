@@ -243,6 +243,7 @@ class PiController(Controller):
             #pwn=self.calculatePwnValue(vl)
             #pwn=self.calculatePwnValue(vl)
             #self.pwm2.changeDutyCycle(80) 
+            print("forward", self.dt*5*sleepTime )
         
 
         time.sleep(self.dt*5*sleepTime)
