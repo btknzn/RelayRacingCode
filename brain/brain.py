@@ -309,7 +309,7 @@ class Brain():
             # grid size
             
             
-            grid_size = 20.0  # potential grid size [m]
+            grid_size = 12.0  # potential grid size [m]
             robot_radius = 5.0  # robot radius [m]
             rx1, ry1 = potential_field_planning(
                 x1, y1, x2, y2, listObsx, listObsy, grid_size, robot_radius)
@@ -325,7 +325,7 @@ class Brain():
             #path4 = createRoute(came_from, robot1start, last)
             
             path1 = [(rx1[i], ry1[i]) for i in range(len(rx1))]
-            #path1 = path1[0::1]
+            path1 = path1[0::2]
             #path2=[(rx2[i], ry2[i]) for i in range(len(rx2))]
             #path3=[(rx3[i], ry3[i]) for i in range(len(rx3))]
             #path4=[(rx4[i], ry4[i]) for i in range(len(rx4))]
