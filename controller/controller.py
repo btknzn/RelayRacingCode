@@ -238,7 +238,7 @@ class PiController(Controller):
             self.pwm2.changeDutyCycle(pwn) 
         
 
-        time.sleep(self.dt*2)
+        time.sleep(self.dt*3)
         gpio.output(self.IN1, gpio.LOW)
         gpio.output(self.IN2, gpio.LOW)
         gpio.output(self.IN3, gpio.LOW)
