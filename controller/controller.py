@@ -54,10 +54,10 @@ class PiController(Controller):
         gpio.setcfg(self.PWMPIN1, gpio.OUTPUT)
         gpio.setcfg(self.PWMPIN2, gpio.OUTPUT)
         
-        #self.pwm1 = OrangePwm(100, self.PWMPIN1)
-        #self.pwm2 = OrangePwm(100, self.PWMPIN2)
-        #self.pwm1.start(100)
-        #self.pwm2.start(100)
+        self.pwm1 = OrangePwm(100, self.PWMPIN1)
+        self.pwm2 = OrangePwm(100, self.PWMPIN2)
+        self.pwm1.start(100)
+        self.pwm2.start(100)
 
 
         
@@ -65,8 +65,8 @@ class PiController(Controller):
     def close(self):
         self.closed = True
         self.socket.close()
-        #self.pwm1.stop()
-        #self.pwm1.stop()
+        self.pwm1.stop()
+        self.pwm2.stop()
         gpio.output(self.IN1, gpio.LOW)
         gpio.output(self.IN2, gpio.LOW)
         gpio.output(self.IN3, gpio.LOW)
@@ -184,8 +184,8 @@ class PiController(Controller):
 
     def makeAction(self, v, w):
 
-        vr, vl = self.normalize(v,w)
-        #vr, vl = self.uniToDiff(v,w)
+        #vr, vl = self.normalize(v,w)
+        vr, vl = self.uniToDiff(v,w)
         # Motor code to 
         #print(nvr, nvl)
         if(vr>=vl):
@@ -201,52 +201,50 @@ class PiController(Controller):
         #TODO: Needs to be implemented
         print(self.current, self.goal, vr, vl)
         
-        gpio.output(self.PWMPIN1, gpio.HIGH)
-        gpio.output(self.PWMPIN2, gpio.HIGH)
-        if (vr - vl)>0.6:
-            sleepTime = vr
+        if (vr - vl)>5:
+            
             #left turn
             gpio.output(self.IN1, gpio.HIGH)
             gpio.output(self.IN2, gpio.LOW)
-            #pwn=self.calculatePwnValue(vr)
-            #self.pwm1.changeDutyCycle(80) 
+            pwn=self.calculatePwnValue(vr)
+            self.pwm1.changeDutyCycle(80) 
 
-            #gpio.output(self.IN3, gpio.LOW)
-            #gpio.output(self.IN4, gpio.HIGH)
-            #pwn=self.calculatePwnValue(vl)
-            #self.pwm2.changeDutyCycle(80)
+            gpio.output(self.IN3, gpio.LOW)
+            gpio.output(self.IN4, gpio.HIGH)
+            pwn=self.calculatePwnValue(vl)
+            self.pwm2.changeDutyCycle(80)
 
-        elif (vl- vr)>0.6:
-            sleepTime = vl
+        elif (vl- vr)>5:
+            
             #right turn
             gpio.output(self.IN1, gpio.LOW)
             gpio.output(self.IN2, gpio.HIGH)
-            #pwn=self.calculatePwnValue(vr)
-            #self.pwm1.changeDutyCycle(80)
+            pwn=self.calculatePwnValue(vr)
+            self.pwm1.changeDutyCycle(pwn)
 
-            #gpio.output(self.IN3, gpio.HIGH)
-            #gpio.output(self.IN4, gpio.LOW)
-            #pwn=self.calculatePwnValue(vl)
-            #self.pwm2.changeDutyCycle(80)
+            gpio.output(self.IN3, gpio.HIGH)
+            gpio.output(self.IN4, gpio.LOW)
+            pwn=self.calculatePwnValue(vl)
+            self.pwm2.changeDutyCycle(pwn)
             
         else:
             #forward
-            sleepTime = 2
+            
             gpio.output(self.IN1, gpio.HIGH)
             gpio.output(self.IN2, gpio.LOW)
             #pwn=self.calculatePwnValue(vr)
-            #pwn=self.calculatePwnValue(vr)
-            #self.pwm1.changeDutyCycle(80) 
+            pwn=self.calculatePwnValue(vr)
+            self.pwm1.changeDutyCycle(pwn) 
 
             gpio.output(self.IN3, gpio.HIGH)
             gpio.output(self.IN4, gpio.LOW)
             #pwn=self.calculatePwnValue(vl)
-            #pwn=self.calculatePwnValue(vl)
-            #self.pwm2.changeDutyCycle(80) 
-            print("forward", self.dt*5*sleepTime )
+            pwn=self.calculatePwnValue(vl)
+            self.pwm2.changeDutyCycle(pwn) 
+            
         
 
-        time.sleep(self.dt*5*sleepTime)
+        time.sleep(self.dt*5)
         gpio.output(self.IN1, gpio.LOW)
         gpio.output(self.IN2, gpio.LOW)
         gpio.output(self.IN3, gpio.LOW)
@@ -261,7 +259,7 @@ class PiController(Controller):
 
     def calculatePwnValue(self, power):
         power=abs(power)
-        pwn=power*1000
+        pwn=power*100
         return pwn
 
 def main():
