@@ -660,8 +660,8 @@ def findRanges(image):
         tmpS=tmpS/(count)
         tmpV=tmpV/(count)
 
-    return (max(0, lowH-10), max(0, lowS-15), max(0, lowV-15)), \
-        (min(255, highH+10), min(255, highS+15), min(255, highV+15)), \
+    return (max(0, lowH-10), max(0, lowS-25), max(0, lowV-25)), \
+        (min(255, highH+10), min(255, highS+25), min(255, highV+25)), \
         (max(0, tmpH-20), max(100, tmpS-50), max(50, tmpV-60)), \
         (min(255, tmpH+20), min(255, tmpS+50), min(255, tmpV+60))
 
