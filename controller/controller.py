@@ -166,7 +166,7 @@ class PiController(Controller):
                     angle = math.degrees(math.atan2(self.goal.y-self.current.y, self.goal.x-self.current.x))
                     
                     print(self.current, self.goal, angle)
-                    if 75 < angle and angle < 105:
+                    if 75 < int(angle) and int(angle) < 105:
                         #forward
                         gpio.output(self.IN1, gpio.HIGH)
                         gpio.output(self.IN2, gpio.LOW)
@@ -178,7 +178,7 @@ class PiController(Controller):
                         #pwn=self.calculatePwnValue(vl)
                         self.pwm2.changeDutyCycle(1000) 
                         
-                    elif angle< 75 and angle >-90:
+                    elif int(angle)< 75 and int(angle) >-90:
                         #turn right
                         gpio.output(self.IN1, gpio.LOW)
                         gpio.output(self.IN2, gpio.HIGH)
