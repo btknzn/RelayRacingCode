@@ -214,6 +214,28 @@ class PiController(Controller):
             pwn=self.calculatePwnValue(vl)
             self.pwm2.changeDutyCycle(pwn)
 
+
+            time.sleep(self.dt*2)
+            gpio.output(self.IN1, gpio.LOW)
+            gpio.output(self.IN2, gpio.LOW)
+            gpio.output(self.IN3, gpio.LOW)
+            gpio.output(self.IN4, gpio.LOW)
+
+
+            gpio.output(self.IN1, gpio.HIGH)
+            gpio.output(self.IN2, gpio.LOW)
+            #pwn=self.calculatePwnValue(vr)
+            pwn=self.calculatePwnValue(vr)
+            self.pwm1.changeDutyCycle(pwn) 
+
+            gpio.output(self.IN3, gpio.HIGH)
+            gpio.output(self.IN4, gpio.LOW)
+            #pwn=self.calculatePwnValue(vl)
+            pwn=self.calculatePwnValue(vl)
+            self.pwm2.changeDutyCycle(pwn)
+
+            time.sleep(self.dt*2)
+
         elif (vl- vr)>2:
             
             #right turn
@@ -226,6 +248,29 @@ class PiController(Controller):
             gpio.output(self.IN4, gpio.LOW)
             pwn=self.calculatePwnValue(vl)
             self.pwm2.changeDutyCycle(pwn)
+
+
+            time.sleep(self.dt*2)
+            gpio.output(self.IN1, gpio.LOW)
+            gpio.output(self.IN2, gpio.LOW)
+            gpio.output(self.IN3, gpio.LOW)
+            gpio.output(self.IN4, gpio.LOW)
+
+            gpio.output(self.IN1, gpio.HIGH)
+            gpio.output(self.IN2, gpio.LOW)
+            #pwn=self.calculatePwnValue(vr)
+            pwn=self.calculatePwnValue(vr)
+            self.pwm1.changeDutyCycle(pwn) 
+
+            gpio.output(self.IN3, gpio.HIGH)
+            gpio.output(self.IN4, gpio.LOW)
+            #pwn=self.calculatePwnValue(vl)
+            pwn=self.calculatePwnValue(vl)
+            self.pwm2.changeDutyCycle(pwn) 
+
+            time.sleep(self.dt*2)
+
+
             
         else:
             #forward
@@ -244,7 +289,7 @@ class PiController(Controller):
             
         
 
-        time.sleep(self.dt*3)
+            time.sleep(self.dt*3)
         gpio.output(self.IN1, gpio.LOW)
         gpio.output(self.IN2, gpio.LOW)
         gpio.output(self.IN3, gpio.LOW)
@@ -259,7 +304,7 @@ class PiController(Controller):
 
     def calculatePwnValue(self, power):
         power=abs(power)
-        pwn=power*30
+        pwn=power*5
         return pwn
 
 def main():
