@@ -29,4 +29,4 @@ Used RaspberryPi for our Brain module.
 Used OrangePi Zero for our Movement module.
 
 
-FOR MORE INFORMATİON, please READ PDF DATA AND LOOK TO POSTER.
+FOR MORE INFORMATİON, please READ WORD Documantation AND LOOK TO POSTER.
