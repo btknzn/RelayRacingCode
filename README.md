@@ -27,3 +27,6 @@ Used OpenCV for image processing.
 Implemented the code for A* algorithm and PID controller for movement module.
 Used RaspberryPi for our Brain module.
 Used OrangePi Zero for our Movement module.
+
+
+FOR MORE INFORMATİON, please READ PDF DATA AND LOOK TO POSTER.
